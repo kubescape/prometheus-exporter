@@ -5,7 +5,9 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 
+	"gopkg.in/yaml.v2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/dynamic"
@@ -34,16 +36,19 @@ func main() {
 	}
 
 	// Get the CRD object from the Kubernetes API server
-	crdObj, err := dynamicClient.Resource(crdSchema).Namespace("kubescape").List(context.TODO(), metav1.ListOptions{})
+	crd, err := dynamicClient.Resource(crdSchema).Namespace("kubescape").List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error getting CRD object: %v\n", err)
 		os.Exit(1)
 	}
 
-	// Display the CRD objects
-	for _, obj := range crdObj.Items {
-		fmt.Println("CRD Object:")
-		fmt.Printf("%s\n", obj)
+	crdBytes, err := yaml.Marshal(crd)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error marshaling CRD to YAML: %v\n", err)
+		os.Exit(1)
 	}
+
+	fmt.Println("CRD YAML:")
+	fmt.Println(strings.TrimSpace(string(crdBytes)))
 
 }
