@@ -2,12 +2,12 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
 	"strings"
 
-	"gopkg.in/yaml.v2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/dynamic"
@@ -42,13 +42,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	crdBytes, err := yaml.Marshal(crd)
+	crdBytes, err := json.MarshalIndent(crd, "", " ")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error marshaling CRD to YAML: %v\n", err)
 		os.Exit(1)
 	}
 
-	fmt.Println("CRD YAML:")
 	fmt.Println(strings.TrimSpace(string(crdBytes)))
 
 }
