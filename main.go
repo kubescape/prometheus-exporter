@@ -2,12 +2,12 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
 	"strings"
 
+	"gopkg.in/yaml.v2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/dynamic"
@@ -32,7 +32,7 @@ func main() {
 	crdSchema := schema.GroupVersionResource{
 		Group:    "spdx.softwarecomposition.kubescape.io",
 		Version:  "v1beta1",
-		Resource: "vulnerabilitymanifestsummaries",
+		Resource: "workloadconfigurationscansummaries",
 	}
 
 	// Get the CRD object from the Kubernetes API server
@@ -42,7 +42,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	crdBytes, err := json.MarshalIndent(crd, "", " ")
+	crdBytes, err := yaml.Marshal(crd)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error marshaling CRD to YAML: %v\n", err)
 		os.Exit(1)
