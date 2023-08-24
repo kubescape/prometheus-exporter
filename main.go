@@ -1,53 +1,55 @@
 package main
 
 import (
-	"context"
-	"flag"
 	"fmt"
-	"os"
-	"strings"
+	"io/ioutil"
+	"log"
 
 	"gopkg.in/yaml.v2"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime/schema"
-	"k8s.io/client-go/dynamic"
-	"k8s.io/client-go/tools/clientcmd"
 )
 
+type Severities struct {
+	Critical    Severity `yaml:"critical"`
+	High        Severity `yaml:"high"`
+	Low         Severity `yaml:"low"`
+	Medium      Severity `yaml:"medium"`
+	Negligible  Severity `yaml:"negligible"`
+	Unknown     Severity `yaml:"unknown"`
+}
+
+type Severity struct {
+	All      int `yaml:"all"`
+	Relevant int `yaml:"relevant"`
+}
+type Spec struct {
+	Severities Severities `yaml:"severities"`
+}
+type VulnerabilitySummary struct {
+	Spec Spec `yaml:"spec"`
+}
+
 func main() {
-	kubeconfig := flag.String("kubeconfig", "KUBECONFIG", "location of kubeconfig")
-	config, err := clientcmd.BuildConfigFromFlags("", *kubeconfig)
+	// Read the YAML file
+	yamlFile, err := ioutil.ReadFile("vulnerability-mock.yaml")
 	if err != nil {
-		panic(err)
+		log.Fatalf("Error reading YAML file: %v", err)
 	}
 
-	// Create the dynamic client
-	dynamicClient, err := dynamic.NewForConfig(config)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error creating dynamic client: %v\n", err)
-		os.Exit(1)
+	// Unmarshal the YAML data into the struct
+	var summary VulnerabilitySummary
+	if err := yaml.Unmarshal(yamlFile, &summary); err != nil {
+		log.Fatalf("Error unmarshaling YAML: %v", err)
 	}
 
-	// Define the CRD schema with the correct API Group and Version
-	crdSchema := schema.GroupVersionResource{
-		Group:    "spdx.softwarecomposition.kubescape.io",
-		Version:  "v1beta1",
-		Resource: "workloadconfigurationscansummaries",
-	}
-
-	// Get the CRD object from the Kubernetes API server
-	crd, err := dynamicClient.Resource(crdSchema).Namespace("kubescape").List(context.TODO(), metav1.ListOptions{})
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error getting CRD object: %v\n", err)
-		os.Exit(1)
-	}
-
-	crdBytes, err := yaml.Marshal(crd)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error marshaling CRD to YAML: %v\n", err)
-		os.Exit(1)
-	}
-
-	fmt.Println(strings.TrimSpace(string(crdBytes)))
-
+	// Print the values of the severities
+	fmt.Printf("Critical (all): %d\n", summary.Spec.Severities.Critical.All)
+	fmt.Printf("Critical (relevant): %d\n", summary.Spec.Severities.Critical.Relevant)
+	fmt.Printf("High (all): %d\n", summary.Spec.Severities.High.All)
+	fmt.Printf("High (relevant): %d\n", summary.Spec.Severities.High.Relevant)
+	fmt.Printf("Medium (all): %d\n", summary.Spec.Severities.Medium.All)
+	fmt.Printf("Medium (relevant): %d\n", summary.Spec.Severities.Medium.Relevant)
+	fmt.Printf("Low (all): %d\n", summary.Spec.Severities.Low.All)
+	fmt.Printf("Low (relevant): %d\n", summary.Spec.Severities.Low.Relevant)
+	fmt.Printf("Negligible (all): %d\n", summary.Spec.Severities.Negligible.All)
+	fmt.Printf("Negligible (relevant): %d\n", summary.Spec.Severities.Negligible.Relevant)
 }
