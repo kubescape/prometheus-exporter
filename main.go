@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 
@@ -9,80 +10,74 @@ import (
 )
 
 var (
-	kubescape_vulnerabilities_total_cluster_critical = prometheus.NewGauge(prometheus.GaugeOpts{
+	clusterCritical = prometheus.NewGauge(prometheus.GaugeOpts{
 		Name: "kubescape_vulnerabilities_total_cluster_critical",
 		Help: "Total number of critical vulnerabilities in the cluster",
 	})
-
-	kubescape_vulnerabilities_total_relevant_cluster_critical = prometheus.NewGauge(prometheus.GaugeOpts{
+	relevantClusterCritical = prometheus.NewGauge(prometheus.GaugeOpts{
 		Name: "kubescape_vulnerabilities_total_relevant_cluster_critical",
-		Help: "Total number of critical vulnerabilities in the cluster",
+		Help: "Total number of relevant critical vulnerabilities in the cluster",
 	})
 
-	kubescape_vulnerabilities_total_cluster_high = prometheus.NewGauge(prometheus.GaugeOpts{
+	clusterHigh = prometheus.NewGauge(prometheus.GaugeOpts{
 		Name: "kubescape_vulnerabilities_total_cluster_high",
 		Help: "Total number of high vulnerabilities in the cluster",
 	})
-
-	kubescape_vulnerabilities_total_relevant_cluster_high = prometheus.NewGauge(prometheus.GaugeOpts{
+	relevantClusterHigh = prometheus.NewGauge(prometheus.GaugeOpts{
 		Name: "kubescape_vulnerabilities_total_relevant_cluster_high",
-		Help: "Total number of high vulnerabilities in the cluster",
+		Help: "Total number of relevant high vulnerabilities in the cluster",
 	})
 
-	kubescape_vulnerabilities_total_cluster_medium = prometheus.NewGauge(prometheus.GaugeOpts{
+	clusterMedium = prometheus.NewGauge(prometheus.GaugeOpts{
 		Name: "kubescape_vulnerabilities_total_cluster_medium",
 		Help: "Total number of medium vulnerabilities in the cluster",
 	})
-
-	kubescape_vulnerabilities_total_relevant_cluster_medium = prometheus.NewGauge(prometheus.GaugeOpts{
+	relevantClusterMedium = prometheus.NewGauge(prometheus.GaugeOpts{
 		Name: "kubescape_vulnerabilities_total_relevant_cluster_medium",
-		Help: "Total number of medium vulnerabilities in the cluster",
+		Help: "Total number of relevant medium vulnerabilities in the cluster",
 	})
 
-	kubescape_vulnerabilities_total_cluster_low = prometheus.NewGauge(prometheus.GaugeOpts{
+	clusterLow = prometheus.NewGauge(prometheus.GaugeOpts{
 		Name: "kubescape_vulnerabilities_total_cluster_low",
 		Help: "Total number of low vulnerabilities in the cluster",
 	})
-
-	kubescape_vulnerabilities_total_relevant_cluster_low = prometheus.NewGauge(prometheus.GaugeOpts{
+	relevantClusterLow = prometheus.NewGauge(prometheus.GaugeOpts{
 		Name: "kubescape_vulnerabilities_total_relevant_cluster_low",
-		Help: "Total number of low vulnerabilities in the cluster",
+		Help: "Total number of relevant low vulnerabilities in the cluster",
 	})
 
-	kubescape_vulnerabilities_total_cluster_negligible = prometheus.NewGauge(prometheus.GaugeOpts{
+	clusterNegligible = prometheus.NewGauge(prometheus.GaugeOpts{
 		Name: "kubescape_vulnerabilities_total_cluster_negligible",
 		Help: "Total number of negligible vulnerabilities in the cluster",
 	})
-
-	kubescape_vulnerabilities_total_relevant_cluster_negligible = prometheus.NewGauge(prometheus.GaugeOpts{
+	relevantClusterNegligible = prometheus.NewGauge(prometheus.GaugeOpts{
 		Name: "kubescape_vulnerabilities_total_relevant_cluster_negligible",
-		Help: "Total number of negligible vulnerabilities in the cluster",
+		Help: "Total number of relevant negligible vulnerabilities in the cluster",
 	})
 
-	kubescape_vulnerabilities_total_cluster_unknown = prometheus.NewGauge(prometheus.GaugeOpts{
+	clusterUnknown = prometheus.NewGauge(prometheus.GaugeOpts{
 		Name: "kubescape_vulnerabilities_total_cluster_unknown",
 		Help: "Total number of unknown vulnerabilities in the cluster",
 	})
-
-	kubescape_vulnerabilities_total_relevant_cluster_unknown = prometheus.NewGauge(prometheus.GaugeOpts{
+	relevantClusterUnknown = prometheus.NewGauge(prometheus.GaugeOpts{
 		Name: "kubescape_vulnerabilities_total_relevant_cluster_unknown",
-		Help: "Total number of unknown vulnerabilities in the cluster",
+		Help: "Total number of relevant unknown vulnerabilities in the cluster",
 	})
 )
 
 func init() {
-	prometheus.MustRegister(kubescape_vulnerabilities_total_cluster_critical)
-	prometheus.MustRegister(kubescape_vulnerabilities_total_relevant_cluster_critical)
-	prometheus.MustRegister(kubescape_vulnerabilities_total_cluster_high)
-	prometheus.MustRegister(kubescape_vulnerabilities_total_relevant_cluster_high)
-	prometheus.MustRegister(kubescape_vulnerabilities_total_cluster_medium)
-	prometheus.MustRegister(kubescape_vulnerabilities_total_relevant_cluster_medium)
-	prometheus.MustRegister(kubescape_vulnerabilities_total_cluster_low)
-	prometheus.MustRegister(kubescape_vulnerabilities_total_relevant_cluster_low)
-	prometheus.MustRegister(kubescape_vulnerabilities_total_cluster_negligible)
-	prometheus.MustRegister(kubescape_vulnerabilities_total_relevant_cluster_negligible)
-	prometheus.MustRegister(kubescape_vulnerabilities_total_cluster_unknown)
-	prometheus.MustRegister(kubescape_vulnerabilities_total_relevant_cluster_unknown)
+	prometheus.MustRegister(clusterCritical)
+	prometheus.MustRegister(relevantClusterCritical)
+	prometheus.MustRegister(clusterHigh)
+	prometheus.MustRegister(relevantClusterHigh)
+	prometheus.MustRegister(clusterMedium)
+	prometheus.MustRegister(relevantClusterMedium)
+	prometheus.MustRegister(clusterLow)
+	prometheus.MustRegister(relevantClusterLow)
+	prometheus.MustRegister(clusterNegligible)
+	prometheus.MustRegister(relevantClusterNegligible)
+	prometheus.MustRegister(clusterUnknown)
+	prometheus.MustRegister(relevantClusterUnknown)
 }
 
 func main() {
@@ -95,14 +90,18 @@ func main() {
 		log.Fatalf("Error reading YAML file: %v", err)
 	}
 
+	fmt.Println("YAML Data:")
+	fmt.Println(string(yamlData))
+
 	criticalAll, criticalRelevant, err := collect.GetSeverityValues(yamlData, "high")
 	if err != nil {
 		log.Fatalf("Error getting high severity values: %v", err)
 	}
 
-	// Update Prometheus metrics with labels
-	kubescape_vulnerabilities_total_cluster_critical.Set(float64(criticalAll))
-	kubescape_vulnerabilities_total_relevant_cluster_critical.Set(float64(criticalRelevant))
+	fmt.Println("Relevant High : ", criticalRelevant)
+	fmt.Println("High : ", float64(criticalAll))
 
+	// clusterCritical.Set(float64(criticalAll))
+	// relevantClusterCritical.Set(float64(criticalRelevant))
 
 }
