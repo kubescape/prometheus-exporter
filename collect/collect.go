@@ -3,6 +3,7 @@ package collect
 import (
 	"fmt"
 
+	"github.com/prometheus/client_golang/prometheus"
 	"gopkg.in/yaml.v2"
 )
 
@@ -24,6 +25,43 @@ type Spec struct {
 }
 type VulnerabilitySummary struct {
 	Spec Spec `yaml:"spec"`
+}
+
+var (
+	kubescape_vulnerabilities_total_cluster_critical = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "kubescape_vulnerabilities_total_cluster_critical",
+		Help: "Total number of critical vulnerabilities in the cluster",
+	}, []string{"relevant"})
+	kubescape_vulnerabilities_total_cluster_high = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "kubescape_vulnerabilities_total_cluster_high",
+		Help: "Total number of high vulnerabilities in the cluster",
+	}, []string{"relevant"})
+	kubescape_vulnerabilities_total_cluster_medium = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "kubescape_vulnerabilities_total_cluster_medium",
+		Help: "Total number of medium vulnerabilities in the cluster",
+	}, []string{"relevant"})
+	kubescape_vulnerabilities_total_cluster_low = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "kubescape_vulnerabilities_total_cluster_low",
+		Help: "Total number of low vulnerabilities in the cluster",
+	}, []string{"relevant"})
+	kubescape_vulnerabilities_total_cluster_negligible = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "kubescape_vulnerabilities_total_cluster_negligible",
+		Help: "Total number of negligible vulnerabilities in the cluster",
+	}, []string{"relevant"})
+	kubescape_vulnerabilities_total_cluster_unknown = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "kubescape_vulnerabilities_total_cluster_unknown",
+		Help: "Total number of unknown vulnerabilities in the cluster",
+	}, []string{"relevant"})
+)
+
+func init() {
+	prometheus.MustRegister(kubescape_vulnerabilities_total_cluster_critical)
+	prometheus.MustRegister(kubescape_vulnerabilities_total_cluster_high)
+	prometheus.MustRegister(kubescape_vulnerabilities_total_cluster_medium)
+	prometheus.MustRegister(kubescape_vulnerabilities_total_cluster_low)
+	prometheus.MustRegister(kubescape_vulnerabilities_total_cluster_negligible)
+	prometheus.MustRegister(kubescape_vulnerabilities_total_cluster_unknown)
+
 }
 
 func GetSeverityValues(yamlData []byte, severity string) (int, int, error) {
