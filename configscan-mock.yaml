@@ -28,4 +28,4 @@ spec:
       name: sample1
     - namespace: default
       kind: 
-      name: sample2
+      name: sample
