@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"net/http"
 
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/yrs147/kubescape-exporter/collect"
 )
 
@@ -84,26 +82,23 @@ func init() {
 
 func main() {
 
-	http.Handle("/metrics", promhttp.Handler())
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	// http.Handle("/metrics", promhttp.Handler())
+	// log.Fatal(http.ListenAndServe(":8080", nil))
 
-	yamlData, err := ioutil.ReadFile("configscan-mock.yaml")
+	yamlData, err := ioutil.ReadFile("test.yaml")
 	if err != nil {
 		log.Fatalf("Error reading YAML file: %v", err)
 	}
 
-
 	// fmt.Println(string(yamlData))
 
-	criticalAll, criticalRelevant, err := collect.GetSeverityValues(yamlData, "medium")
+	criticalAll, err := collect.GetSeverityValues(yamlData, "unknown")
 	if err != nil {
 		log.Fatalf("Error getting high severity values: %v", err)
 	}
 
-	fmt.Println("Relevant High : ", criticalRelevant)
-	fmt.Println("High : ", float64(criticalAll))
+	fmt.Println("Critical : ", float64(criticalAll))
 
-	clusterCritical.Set(float64(criticalAll))
-	relevantClusterCritical.Set(float64(criticalRelevant))
+	// clusterCritical.Set(float64(criticalAll))
 
 }
