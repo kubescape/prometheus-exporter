@@ -7,7 +7,7 @@ metadata:
     app: workload-scanner
 spec:
   severities:
-    critical: 7
+    critical: 3
     high: 4
     medium: 6
     low: 9

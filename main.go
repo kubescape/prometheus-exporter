@@ -24,7 +24,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	collect.ConvertToPrometheusMetrics(summary)
+	collect.ProcessMetrics(summary)
 
 	http.Handle("/metrics", promhttp.Handler())
 	fmt.Println("Prometheus metrics server started on :8080")

@@ -42,14 +42,14 @@ func init() {
 }
 
 func GetSeverityValues(yamlData []byte) (*v1beta1.WorkloadConfigurationScanSummary, error) {
-	var summary v1beta1.WorkloadConfigurationScanSummary // Use the imported struct
+	var summary v1beta1.WorkloadConfigurationScanSummary 
 	if err := yaml.Unmarshal(yamlData, &summary); err != nil {
 		return nil, err
 	}
 	return &summary, nil
 }
 
-func ConvertToPrometheusMetrics(summary *v1beta1.WorkloadConfigurationScanSummary) {
+func ProcessMetrics(summary *v1beta1.WorkloadConfigurationScanSummary) {
 	clusterCritical.Set(float64(summary.Spec.Severities.Critical))
 	clusterHigh.Set(float64(summary.Spec.Severities.High))
 	clusterMedium.Set(float64(summary.Spec.Severities.Low))
