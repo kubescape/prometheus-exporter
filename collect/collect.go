@@ -8,27 +8,27 @@ import (
 
 var (
 	clusterCritical = prometheus.NewGauge(prometheus.GaugeOpts{
-		Name: "kubescape_vulnerabilities_total_cluster_critical",
+		Name: "kubescape_controls_total_cluster_critical",
 		Help: "Total number of critical vulnerabilities in the cluster",
 	})
 
 	clusterHigh = prometheus.NewGauge(prometheus.GaugeOpts{
-		Name: "kubescape_vulnerabilities_total_cluster_high",
+		Name: "kubescape_controls_total_cluster_high",
 		Help: "Total number of high vulnerabilities in the cluster",
 	})
 
 	clusterMedium = prometheus.NewGauge(prometheus.GaugeOpts{
-		Name: "kubescape_vulnerabilities_total_cluster_medium",
+		Name: "kubescape_controls_total_cluster_medium",
 		Help: "Total number of medium vulnerabilities in the cluster",
 	})
 
 	clusterLow = prometheus.NewGauge(prometheus.GaugeOpts{
-		Name: "kubescape_vulnerabilities_total_cluster_low",
+		Name: "kubescape_controls_total_cluster_low",
 		Help: "Total number of low vulnerabilities in the cluster",
 	})
 
 	clusterUnknown = prometheus.NewGauge(prometheus.GaugeOpts{
-		Name: "kubescape_vulnerabilities_total_cluster_unknown",
+		Name: "kubescape_controls_total_cluster_unknown",
 		Help: "Total number of unknown vulnerabilities in the cluster",
 	})
 )
