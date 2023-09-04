@@ -11,5 +11,5 @@ spec:
     high: 4
     medium: 6
     low: 9
-    unknown: 1
+    unknown: 5
   controls: {}
