@@ -1,0 +1,35 @@
+apiVersion: spdx.softwarecomposition.kubescape.io/v1beta1
+kind: ScopedConfigurationScanSummaryList
+metadata:
+  name: scoped-config-scan-summary-list
+  namespace: default
+spec:
+  items:
+  - metadata:
+      name: workload-config-scan-1
+      namespace: namespace-1
+    spec:
+      severities:
+        critical: 3
+        high: 4
+        medium: 6
+        low: 9
+        unknown: 5
+      workloadConfigurationScanSummaryIdentifiers:
+      - Namespace: namespace-1
+        Kind: WorkloadConfigurationScanSummary
+        Name: workload-config-scan-1
+  - metadata:
+      name: workload-config-scan-2
+      namespace: namespace-2
+    spec:
+      severities:
+        critical: 3
+        high: 4
+        medium: 6
+        low: 9
+        unknown: 5
+      workloadConfigurationScanSummaryIdentifiers:
+      - Namespace: namespace-2
+        Kind: WorkloadConfigurationScanSummary
+        Name: workload-config-scan-2
