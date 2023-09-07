@@ -1,0 +1,31 @@
+apiVersion: spdx.softwarecomposition.kubescape.io/v1beta1
+kind: ConfigurationScanSummary
+metadata:
+  name: kubescape
+spec:
+  severities:
+    critical:
+      all: 0
+      relevant: 0
+    high:
+      all: 10
+      relevant: 4
+    low:
+      all: 0
+      relevant: 0
+    medium:
+      all: 2
+      relevant: 1
+    negligible:
+      all: 0
+      relevant: 0
+    unknown:
+      all: 0
+      relevant: 0
+  summaryReference:
+    - namespace: kubescape
+      kind: 
+      name: sample1
+    - namespace: default
+      kind: 
+      name: sample
