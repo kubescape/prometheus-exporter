@@ -14,7 +14,7 @@ import (
 
 func main() {
 
-	ns, err := ioutil.ReadFile("test.yaml")
+	ns, err := ioutil.ReadFile("namespace.yaml")
 	if err != nil {
 		log.Fatalf("Error reading YAML file: %v", err)
 	}
