@@ -14,6 +14,15 @@ import (
 
 func main() {
 
+	// Start Prometheus HTTP server
+	go func() {
+		http.Handle("/metrics", promhttp.Handler())
+		fmt.Println("Prometheus metrics server started on :8080")
+		log.Fatal(http.ListenAndServe(":8080", nil))
+	}()
+	
+	//To Monitor the severities in objects
+	for {
 	ns, err := ioutil.ReadFile("namespace.yaml")
 	if err != nil {
 		log.Fatalf("Error reading YAML file: %v", err)
@@ -39,8 +48,6 @@ func main() {
 	metrics.ProcessClusterMetrics(clustersummary)
 	metrics.ProcessNamespaceMetrics(nssummary)
 
-	http.Handle("/metrics", promhttp.Handler())
-	fmt.Println("Prometheus metrics server started on :8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	}
 
 }
