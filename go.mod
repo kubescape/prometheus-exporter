@@ -3,7 +3,7 @@ module github.com/yrs147/kubescape-exporter
 go 1.20
 
 require (
-	github.com/kubescape/storage v0.0.17-0.20230823071553-f0f423e5563b
+	github.com/kubescape/storage v0.0.20
 	github.com/prometheus/client_golang v1.14.0
 	gopkg.in/yaml.v2 v2.4.0
 )

@@ -28,7 +28,7 @@ func main() {
 		log.Fatalf("Error reading YAML file: %v", err)
 	}
 
-	nssummary, err := collect.GetNamespaceSeverityValues(ns)
+	nssummary, err := collect.GetConfigscanNamespaceSeverityValues(ns)
 	if err != nil {
 		fmt.Println("Error parsing YAML : ", err)
 		os.Exit(1)
@@ -39,14 +39,39 @@ func main() {
 		log.Fatalf("Error reading YAML file : %v", err)
 	}
 
-	clustersummary, err := collect.GetClusterSeverityValues(cluster)
+	clustersummary, err := collect.GetConfigscanClusterSeverityValues(cluster)
 	if err != nil {
 		fmt.Println("Error parsing YAML : ", err)
 		os.Exit(1)
 	}
 
-	metrics.ProcessClusterMetrics(clustersummary)
-	metrics.ProcessNamespaceMetrics(nssummary)
+	vulnns, err := ioutil.ReadFile("vuln-ns.yaml")
+	if err != nil {
+		log.Fatalf("Error reading YAML file : %v", err)
+	}
+
+	vulnnssummary, err := collect.GetVulnerabilityNamespaceSeverityValues(vulnns)
+	if err != nil {
+		fmt.Println("Error parsing YAML : ", err)
+		os.Exit(1)
+	}
+
+	vulnclus, err := ioutil.ReadFile("vuln-cluster.yaml")
+	if err != nil {
+		log.Fatalf("Error reading YAML file : %v", err)
+	}
+
+	vulnclustersummary, err := collect.GetVulnerabilityClusterSeverityValues(vulnclus)
+	if err != nil {
+		fmt.Println("Error parsing YAML : ", err)
+		os.Exit(1)
+	}
+
+	metrics.ProcessVulnNamespaceMetrics(vulnnssummary)
+	metrics.ProcessVulnClusterMetrics(vulnclustersummary)
+
+	metrics.ProcessConfigscanClusterMetrics(clustersummary)
+	metrics.ProcessConfigscanNamespaceMetrics(nssummary)
 
 	}
 
