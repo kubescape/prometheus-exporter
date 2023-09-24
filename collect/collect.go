@@ -2,36 +2,36 @@ package collect
 
 import (
 	"gopkg.in/yaml.v2"
-	vuln "github.com/kubescape/storage/pkg/apis/softwarecomposition"
+	sc "github.com/kubescape/storage/pkg/apis/softwarecomposition"
 	
 )
 
-func GetVulnerabilityNamespaceSeverityValues(yamlData []byte) (*vuln.VulnerabilitySummary, error){
-	var summary vuln.VulnerabilitySummary
+func GetVulnerabilityNamespaceSeverityValues(yamlData []byte) (*sc.VulnerabilitySummaryList, error){
+	var summary sc.VulnerabilitySummaryList
 	if err := yaml.Unmarshal(yamlData, &summary); err!=nil{
 		return nil,err
 	}
 	return &summary, nil
 }
 
-func GetVulnerabilityClusterSeverityValues(yamlData []byte) (*vuln.VulnerabilitySummaryList, error){
-	var summary vuln.VulnerabilitySummaryList
+func GetVulnerabilityClusterSeverityValues(yamlData []byte) (*sc.VulnerabilitySummaryList, error){
+	var summary sc.VulnerabilitySummaryList
 	if err := yaml.Unmarshal(yamlData, &summary); err!=nil{
 		return nil,err
 	}
 	return &summary, nil
 }
 
-func GetConfigscanNamespaceSeverityValues(yamlData []byte) (*vuln.ConfigurationScanSummary, error) {
-	var summary vuln.ConfigurationScanSummary 
+func GetConfigscanNamespaceSeverityValues(yamlData []byte) (*sc.ConfigurationScanSummary, error) {
+	var summary sc.ConfigurationScanSummary 
 	if err := yaml.Unmarshal(yamlData, &summary); err != nil {
 		return nil, err
 	}
 	return &summary, nil
 }
 
-func GetConfigscanClusterSeverityValues(yamlData []byte) (*vuln.ConfigurationScanSummaryList, error) {
-	var summary vuln.ConfigurationScanSummaryList 
+func GetConfigscanClusterSeverityValues(yamlData []byte) (*sc.ConfigurationScanSummaryList, error) {
+	var summary sc.ConfigurationScanSummaryList 
 	if err := yaml.Unmarshal(yamlData, &summary); err != nil {
 		return nil, err
 	}
