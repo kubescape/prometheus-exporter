@@ -1,0 +1,47 @@
+apiVersion: v1
+items:
+-  apiVersion: spdx.softwarecomposition.kubescape.io/v1beta1
+   kind: WorkloadConfigurationScanSummary
+   metadata:
+     name: workload-config-scan-1
+     namespace: default
+     labels:
+       app: workload-scanner
+   spec:
+     severities:
+       critical: 13
+       high: 5
+       medium: 8
+       low: 7
+       unknown: 3
+     controls: {}
+-  apiVersion: spdx.softwarecomposition.kubescape.io/v1beta1
+   kind: WorkloadConfigurationScanSummary
+   metadata:
+     name: workload-config-scan-2
+     namespace: default
+     labels:
+       app: workload-scanner2
+   spec:
+     severities:
+       critical: 2
+       high: 5
+       medium: 1
+       low: 3
+       unknown: 6
+     controls: {}
+-  apiVersion: spdx.softwarecomposition.kubescape.io/v1beta1
+   kind: WorkloadConfigurationScanSummary
+   metadata:
+     name: workload-config-scan-2
+     namespace: default
+     labels:
+       app: workload-scanner2
+   spec:
+     severities:
+       critical: 1
+       high: 2
+       medium: 9
+       low: 8
+       unknown: 0
+     controls: {}
