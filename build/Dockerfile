@@ -13,6 +13,7 @@ RUN --mount=target=. \
 
 FROM gcr.io/distroless/static-debian11:nonroot
 
+# Copy the Pre-built binary file from the previous stage
 COPY --from=builder /out/kubescape-exporter /usr/bin/kubescape-exporter
 
 # Entry Point
