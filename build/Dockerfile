@@ -15,5 +15,5 @@ FROM gcr.io/distroless/static-debian11:nonroot
 
 COPY --from=builder /out/kubescape-exporter /usr/bin/kubescape-exporter
 
-# Entry point
+
 ENTRYPOINT [ "kubescape-exporter" ]
