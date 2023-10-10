@@ -78,7 +78,5 @@ func main() {
 
 		metrics.ProcessConfigscanClusterMetrics(clustersummary)
 		metrics.ProcessConfigscanNamespaceMetrics(nssummary)
-
 	}
-
 }
