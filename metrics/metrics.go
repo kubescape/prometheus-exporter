@@ -198,13 +198,7 @@ func ProcessConfigscanNamespaceMetrics(summary *sc.ConfigurationScanSummary) {
 	namespaceUnknown.Set(float64(summary.Spec.Severities.Unknown))
 }
 
-func ProcessConfigscanClusterMetrics(summary *sc.ConfigurationScanSummaryList) {
-
-	totalCritical := 0
-	totalHigh := 0
-	totalLow := 0
-	totalMedium := 0
-	totalUnknown := 0
+func ProcessConfigscanClusterMetrics(summary *sc.ConfigurationScanSummaryList)(totalCritical int , totalHigh int , totalLow int ,totalMedium int , totalUnknown int ){
 
 	for _, item := range summary.Items {
 		totalCritical += item.Spec.Severities.Critical
@@ -219,6 +213,8 @@ func ProcessConfigscanClusterMetrics(summary *sc.ConfigurationScanSummaryList) {
 	clusterLow.Set(float64(totalLow))
 	clusterMedium.Set(float64(totalMedium))
 	clusterUnknown.Set(float64(totalUnknown))
+
+	return totalCritical, totalHigh , totalMedium , totalLow , totalUnknown	
 }
 
 func ProcessVulnNamespaceMetrics(summary *sc.VulnerabilitySummaryList) {
@@ -237,19 +233,7 @@ func ProcessVulnNamespaceMetrics(summary *sc.VulnerabilitySummaryList) {
 	}
 }
 
-func ProcessVulnClusterMetrics(summary *sc.VulnerabilitySummaryList) {
-	
-	totalCritical := 0
-	totalHigh := 0
-	totalLow := 0
-	totalMedium := 0
-	totalUnknown := 0
-
-	relevantCritical := 0
-	relevantHigh := 0
-	relevantLow := 0
-	relevantMedium := 0
-	relevantUnknown := 0
+func ProcessVulnClusterMetrics(summary *sc.VulnerabilitySummaryList) (totalCritical int , totalHigh int , totalLow int ,totalMedium int , totalUnknown int , relevantCritical int , relevantHigh int ,relevantLow int ,  relevantMedium int , relevantUnknown int ){
 
 	for _,item := range summary.Items{
 		totalCritical += item.Spec.Severities.Critical.All
@@ -277,4 +261,6 @@ func ProcessVulnClusterMetrics(summary *sc.VulnerabilitySummaryList) {
 	clusterVulnMediumRelevant.Set(float64(relevantMedium))
 	clusterVulnLowRelevant.Set(float64(relevantLow))
 	clusterVulnUnknownRelevant.Set(float64(relevantUnknown))
+	
+	return totalCritical, totalHigh , totalMedium , totalLow , totalUnknown , relevantCritical , relevantHigh , relevantMedium , relevantLow , relevantUnknown
 }
