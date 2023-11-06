@@ -26,7 +26,7 @@ To get started with the Kubescape Exporter, follow these steps:
 
 2. **Helm Chart Installation**: Install the Kubescape Helm chart by running the following command. Replace `<my_account_ID>` with your account ID and ensure the `clusterName` is set correctly.
 ```
-helm upgrade --install kubescape kubescape/kubescape-operator -n kubescape --create-namespace --set account=<my_account_ID> --set clusterName=`kubectl config current-context`
+helm upgrade --install kubescape kubescape/kubescape-operator -n kubescape --create-namespace --set account=<my_account_ID> --set capabilities.continuousScan=enable --set clusterName=`kubectl config current-context`
 ```
 This command deploys the Kubescape operator to your cluster, which is responsible for running scans and generating security metrics.
 
@@ -39,8 +39,7 @@ git clone https://github.com/yrs147/kubescape-exporter.git
 cd kubescape-exporter
 ```  
 
-5.Run the Exporter: Execute the Kubescape Exporter by running the following command:
-
+5. Run the Exporter: Execute the Kubescape Exporter by running the following command:
 ```
 go run main.go
 ```
@@ -58,8 +57,3 @@ Please note that you should ensure that your Kubernetes cluster is up and runnin
 
 If you encounter issues during setup or have questions, please refer to the project's documentation or open an issue on the project's GitHub repository for assistance.
 
-Contribution
-We welcome contributions from the community to improve and extend the Kubescape Exporter. If you encounter issues, have feature requests, or want to contribute code, please refer to our Contribution Guidelines.
-
-License
-The Kubescape Exporter is open-source software licensed under the MIT License. You are encouraged to use and modify it according to your requirements.
