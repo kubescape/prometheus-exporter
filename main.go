@@ -32,7 +32,7 @@ func main() {
 			log.Fatalf("Error parsing YAML file: %v", err)
 		}
 
-		nssummary, err := collect.GetConfigscanNamespaceSeverityValues(ns)
+		nssummary, err := collect.GetConfigscanSeverityValues(ns)
 		if err != nil {
 			fmt.Println("Error parsing YAML file: ", err)
 			os.Exit(1)
@@ -43,7 +43,7 @@ func main() {
 			log.Fatalf("Error parsing YAML file : %v", err)
 		}
 
-		clustersummary, err := collect.GetConfigscanClusterSeverityValues(cluster)
+		clustersummary, err := collect.GetConfigscanSeverityValues(cluster)
 		if err != nil {
 			fmt.Println("Error parsing YAML file: ", err)
 			os.Exit(1)
@@ -54,7 +54,7 @@ func main() {
 			fmt.Fprintf(os.Stderr, "Error getting CRD as YAML: %v\n", err)
 			os.Exit(1)
 		}
-		vulnnssummary, err := collect.GetVulnerabilityNamespaceSeverityValues(vulnns)
+		vulnnssummary, err := collect.GetVulnerabilitySeverityValues(vulnns)
 		if err != nil {
 			fmt.Println("Error parsing YAML : ", err)
 			os.Exit(1)
@@ -66,7 +66,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		vulnclustersummary, err := collect.GetVulnerabilityClusterSeverityValues(vulnclus)
+		vulnclustersummary, err := collect.GetVulnerabilitySeverityValues(vulnclus)
 		if err != nil {
 			fmt.Println("Error parsing YAML : ", err)
 			os.Exit(1)
