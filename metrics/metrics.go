@@ -6,30 +6,30 @@ import (
 )
 
 var (
-	namespaceCritical = prometheus.NewGauge(prometheus.GaugeOpts{
+	namespaceCritical = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Name: "kubescape_controls_total_namespace_critical",
 		Help: "Total number of critical vulnerabilities in the namespace",
-	})
+	}, []string{"namespace"})
 
-	namespaceHigh = prometheus.NewGauge(prometheus.GaugeOpts{
+	namespaceHigh = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Name: "kubescape_controls_total_namespace_high",
 		Help: "Total number of high vulnerabilities in the namespace",
-	})
+	}, []string{"namespace"})
 
-	namespaceMedium = prometheus.NewGauge(prometheus.GaugeOpts{
+	namespaceMedium = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Name: "kubescape_controls_total_namespace_medium",
 		Help: "Total number of medium vulnerabilities in the namespace",
-	})
+	}, []string{"namespace"})
 
-	namespaceLow = prometheus.NewGauge(prometheus.GaugeOpts{
+	namespaceLow = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Name: "kubescape_controls_total_namespace_low",
 		Help: "Total number of low vulnerabilities in the namespace",
-	})
+	}, []string{"namespace"})
 
-	namespaceUnknown = prometheus.NewGauge(prometheus.GaugeOpts{
+	namespaceUnknown = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Name: "kubescape_controls_total_namespace_unknown",
 		Help: "Total number of unknown vulnerabilities in the namespace",
-	})
+	}, []string{"namespace"})
 	clusterCritical = prometheus.NewGauge(prometheus.GaugeOpts{
 		Name: "kubescape_controls_total_cluster_critical",
 		Help: "Total number of critical vulnerabilities in the cluster",
@@ -190,12 +190,15 @@ func init() {
 	prometheus.MustRegister(clusterVulnUnknownRelevant)
 }
 
-func ProcessConfigscanNamespaceMetrics(summary *sc.ConfigurationScanSummary) {
-	namespaceCritical.Set(float64(summary.Spec.Severities.Critical))
-	namespaceHigh.Set(float64(summary.Spec.Severities.High))
-	namespaceLow.Set(float64(summary.Spec.Severities.Low))
-	namespaceMedium.Set(float64(summary.Spec.Severities.Medium))
-	namespaceUnknown.Set(float64(summary.Spec.Severities.Unknown))
+func ProcessConfigscanNamespaceMetrics(summary *sc.ConfigurationScanSummaryList) {
+	for _,item := range summary.Items{
+		namespace := item.ObjectMeta.Name
+		namespaceCritical.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Critical))
+		namespaceHigh.WithLabelValues(namespace).Set(float64(item.Spec.Severities.High))
+		namespaceLow.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Low))
+		namespaceMedium.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Medium))
+		namespaceUnknown.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Unknown))
+	}
 }
 
 func ProcessConfigscanClusterMetrics(summary *sc.ConfigurationScanSummaryList)(totalCritical int , totalHigh int , totalLow int ,totalMedium int , totalUnknown int ){
@@ -219,17 +222,17 @@ func ProcessConfigscanClusterMetrics(summary *sc.ConfigurationScanSummaryList)(t
 
 func ProcessVulnNamespaceMetrics(summary *sc.VulnerabilitySummaryList) {
 	for _,item := range summary.Items{
-	namespace := item.ObjectMeta.Name
-	namespaceVulnCritical.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Critical.All))
-	namespaceVulnHigh.WithLabelValues(namespace).Set(float64(item.Spec.Severities.High.All))
-	namespaceVulnLow.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Low.All))
-	namespaceVulnMedium.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Medium.All))
-	namespaceVulnUnknown.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Unknown.All))
-	namespaceVulnCriticalRelevant.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Critical.Relevant))
-	namespaceVulnHighRelevant.WithLabelValues(namespace).Set(float64(item.Spec.Severities.High.Relevant))
-	namespaceVulnLowRelevant.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Low.Relevant))
-	namespaceVulnMediumRelevant.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Medium.Relevant))
-	namespaceVulnUnknownRelevant.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Unknown.Relevant))
+		namespace := item.ObjectMeta.Name
+		namespaceVulnCritical.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Critical.All))
+		namespaceVulnHigh.WithLabelValues(namespace).Set(float64(item.Spec.Severities.High.All))
+		namespaceVulnLow.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Low.All))
+		namespaceVulnMedium.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Medium.All))
+		namespaceVulnUnknown.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Unknown.All))
+		namespaceVulnCriticalRelevant.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Critical.Relevant))
+		namespaceVulnHighRelevant.WithLabelValues(namespace).Set(float64(item.Spec.Severities.High.Relevant))
+		namespaceVulnLowRelevant.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Low.Relevant))
+		namespaceVulnMediumRelevant.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Medium.Relevant))
+		namespaceVulnUnknownRelevant.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Unknown.Relevant))
 	}
 }
 
@@ -247,8 +250,6 @@ func ProcessVulnClusterMetrics(summary *sc.VulnerabilitySummaryList) (totalCriti
 		relevantMedium += item.Spec.Severities.Medium.Relevant
 		relevantLow += item.Spec.Severities.Low.Relevant
 		relevantUnknown += item.Spec.Severities.Unknown.Relevant
-
-
 	}
 	
 	clusterVulnCritical.Set(float64(totalCritical))

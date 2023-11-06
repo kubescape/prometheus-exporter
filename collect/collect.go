@@ -22,8 +22,8 @@ func GetVulnerabilityClusterSeverityValues(yamlData []byte) (*sc.VulnerabilitySu
 	return &summary, nil
 }
 
-func GetConfigscanNamespaceSeverityValues(yamlData []byte) (*sc.ConfigurationScanSummary, error) {
-	var summary sc.ConfigurationScanSummary 
+func GetConfigscanNamespaceSeverityValues(yamlData []byte) (*sc.ConfigurationScanSummaryList, error) {
+	var summary sc.ConfigurationScanSummaryList 
 	if err := yaml.Unmarshal(yamlData, &summary); err != nil {
 		return nil, err
 	}

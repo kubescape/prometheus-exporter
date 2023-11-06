@@ -3,15 +3,14 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/yrs147/kubescape-exporter/api"
 	"github.com/yrs147/kubescape-exporter/collect"
 	"github.com/yrs147/kubescape-exporter/metrics"
-	"github.com/yrs147/kubescape-exporter/api"
 )
 
 func main() {
@@ -28,25 +27,25 @@ func main() {
 
 	//To Monitor the severities in objects
 	for {
-		ns, err := ioutil.ReadFile("namespace.yaml")
+		ns, err := api.GetConfigScanSummary(*kubeconfig)
 		if err != nil {
-			log.Fatalf("Error reading YAML file: %v", err)
+			log.Fatalf("Error parsing YAML file: %v", err)
 		}
 
 		nssummary, err := collect.GetConfigscanNamespaceSeverityValues(ns)
 		if err != nil {
-			fmt.Println("Error parsing YAML : ", err)
+			fmt.Println("Error parsing YAML file: ", err)
 			os.Exit(1)
 		}
 
-		cluster, err := ioutil.ReadFile("cluster.yaml")
+		cluster, err := api.GetConfigScanSummary(*kubeconfig)
 		if err != nil {
-			log.Fatalf("Error reading YAML file : %v", err)
+			log.Fatalf("Error parsing YAML file : %v", err)
 		}
 
 		clustersummary, err := collect.GetConfigscanClusterSeverityValues(cluster)
 		if err != nil {
-			fmt.Println("Error parsing YAML : ", err)
+			fmt.Println("Error parsing YAML file: ", err)
 			os.Exit(1)
 		}
 
