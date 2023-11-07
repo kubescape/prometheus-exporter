@@ -1,1 +1,7 @@
 KUBECONFIG
+
+# Built Binary File
+kubescape-exporter
+
+# Data stored by Grafana
+data
