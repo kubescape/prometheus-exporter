@@ -84,6 +84,7 @@ func TestProcessVulnClusterMetrics(t *testing.T) {
 func TestProcessConfigscanClusterMetrics(t *testing.T) {
 
 	csSummary := &v1beta1.ConfigurationScanSummaryList{
+
 		Items: []v1beta1.ConfigurationScanSummary{
 			{
 				Spec: v1beta1.ConfigurationScanSummarySpec{
