@@ -1,7 +1,7 @@
 package metrics
 
 import (
-	sc "github.com/kubescape/storage/pkg/apis/softwarecomposition"
+	"github.com/kubescape/storage/pkg/apis/softwarecomposition/v1beta1"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
@@ -129,7 +129,6 @@ var (
 		Help: "Number of relevant unknown vulnerabilities in the namespace",
 	}, []string{"namespace"})
 
-
 	clusterVulnCriticalRelevant = prometheus.NewGauge(prometheus.GaugeOpts{
 		Name: "kubescape_vulnerabilities_relevant_cluster_critical",
 		Help: "Number of relevant critical vulnerabilities in the cluster",
@@ -154,7 +153,6 @@ var (
 		Name: "kubescape_vulnerabilities_relevant_cluster_unknown",
 		Help: "Number of relevant unknown vulnerabilities in the cluster",
 	})
-
 )
 
 func init() {
@@ -190,8 +188,8 @@ func init() {
 	prometheus.MustRegister(clusterVulnUnknownRelevant)
 }
 
-func ProcessConfigscanNamespaceMetrics(summary *sc.ConfigurationScanSummaryList) {
-	for _,item := range summary.Items{
+func ProcessConfigscanNamespaceMetrics(summary *v1beta1.ConfigurationScanSummaryList) {
+	for _, item := range summary.Items {
 		namespace := item.ObjectMeta.Name
 		namespaceCritical.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Critical))
 		namespaceHigh.WithLabelValues(namespace).Set(float64(item.Spec.Severities.High))
@@ -201,7 +199,7 @@ func ProcessConfigscanNamespaceMetrics(summary *sc.ConfigurationScanSummaryList)
 	}
 }
 
-func ProcessConfigscanClusterMetrics(summary *sc.ConfigurationScanSummaryList)(totalCritical int , totalHigh int , totalLow int ,totalMedium int , totalUnknown int ){
+func ProcessConfigscanClusterMetrics(summary *v1beta1.ConfigurationScanSummaryList) (totalCritical int, totalHigh int, totalLow int, totalMedium int, totalUnknown int) {
 
 	for _, item := range summary.Items {
 		totalCritical += item.Spec.Severities.Critical
@@ -217,11 +215,11 @@ func ProcessConfigscanClusterMetrics(summary *sc.ConfigurationScanSummaryList)(t
 	clusterMedium.Set(float64(totalMedium))
 	clusterUnknown.Set(float64(totalUnknown))
 
-	return totalCritical, totalHigh , totalMedium , totalLow , totalUnknown	
+	return totalCritical, totalHigh, totalMedium, totalLow, totalUnknown
 }
 
-func ProcessVulnNamespaceMetrics(summary *sc.VulnerabilitySummaryList) {
-	for _,item := range summary.Items{
+func ProcessVulnNamespaceMetrics(summary *v1beta1.VulnerabilitySummaryList) {
+	for _, item := range summary.Items {
 		namespace := item.ObjectMeta.Name
 		namespaceVulnCritical.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Critical.All))
 		namespaceVulnHigh.WithLabelValues(namespace).Set(float64(item.Spec.Severities.High.All))
@@ -236,9 +234,9 @@ func ProcessVulnNamespaceMetrics(summary *sc.VulnerabilitySummaryList) {
 	}
 }
 
-func ProcessVulnClusterMetrics(summary *sc.VulnerabilitySummaryList) (totalCritical int , totalHigh int , totalLow int ,totalMedium int , totalUnknown int , relevantCritical int , relevantHigh int ,relevantLow int ,  relevantMedium int , relevantUnknown int ){
+func ProcessVulnClusterMetrics(summary *v1beta1.VulnerabilitySummaryList) (totalCritical int, totalHigh int, totalLow int, totalMedium int, totalUnknown int, relevantCritical int, relevantHigh int, relevantLow int, relevantMedium int, relevantUnknown int) {
 
-	for _,item := range summary.Items{
+	for _, item := range summary.Items {
 		totalCritical += item.Spec.Severities.Critical.All
 		totalHigh += item.Spec.Severities.High.All
 		totalMedium += item.Spec.Severities.Medium.All
@@ -251,7 +249,7 @@ func ProcessVulnClusterMetrics(summary *sc.VulnerabilitySummaryList) (totalCriti
 		relevantLow += item.Spec.Severities.Low.Relevant
 		relevantUnknown += item.Spec.Severities.Unknown.Relevant
 	}
-	
+
 	clusterVulnCritical.Set(float64(totalCritical))
 	clusterVulnHigh.Set(float64(totalHigh))
 	clusterVulnMedium.Set(float64(totalMedium))
@@ -262,6 +260,6 @@ func ProcessVulnClusterMetrics(summary *sc.VulnerabilitySummaryList) (totalCriti
 	clusterVulnMediumRelevant.Set(float64(relevantMedium))
 	clusterVulnLowRelevant.Set(float64(relevantLow))
 	clusterVulnUnknownRelevant.Set(float64(relevantUnknown))
-	
-	return totalCritical, totalHigh , totalMedium , totalLow , totalUnknown , relevantCritical , relevantHigh , relevantMedium , relevantLow , relevantUnknown
+
+	return totalCritical, totalHigh, totalMedium, totalLow, totalUnknown, relevantCritical, relevantHigh, relevantMedium, relevantLow, relevantUnknown
 }
