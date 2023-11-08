@@ -5,18 +5,31 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
+	"path/filepath"
 
+	"github.com/kubescape/go-logger"
+	"github.com/kubescape/go-logger/helpers"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/yrs147/kubescape-exporter/api"
-	"github.com/yrs147/kubescape-exporter/collect"
 	"github.com/yrs147/kubescape-exporter/metrics"
+	"k8s.io/client-go/util/homedir"
 )
 
 func main() {
 
-	kubeconfig := flag.String("kubeconfig", "KUBECONFIG", "location of kubeconfig")
+	var kubeconfig *string
+	if home := homedir.HomeDir(); home != "" {
+		kubeconfig = flag.String("kubeconfig", filepath.Join(home, ".kube", "config"), "(optional) absolute path to the kubeconfig file")
+	} else {
+		kubeconfig = flag.String("kubeconfig", "", "absolute path to the kubeconfig file")
+	}
 	flag.Parse()
+
+	var storageClient api.StorageClient
+	storageClient = api.NewStorageClient()
+	if err := storageClient.Initialize(*kubeconfig); err != nil {
+		logger.L().Error("error initializing storage client", helpers.Error(err))
+	}
 
 	// Start Prometheus HTTP server
 	go func() {
@@ -25,57 +38,23 @@ func main() {
 		log.Fatal(http.ListenAndServe(":8080", nil))
 	}()
 
-	//To Monitor the severities in objects
+	// monitor the severities in objects
 	for {
-		ns, err := api.GetConfigScanSummary(*kubeconfig)
+
+		configScanSummaries, err := storageClient.GetConfigScanSummaries(*kubeconfig)
 		if err != nil {
-			log.Fatalf("Error parsing YAML file: %v", err)
+			logger.L().Error("error getting configuration scan summaries", helpers.Error(err))
 		}
 
-		nssummary, err := collect.GetConfigscanSeverityValues(ns)
+		vulnScanSummaries, err := storageClient.GetVulnerabilitySummaries(*kubeconfig)
 		if err != nil {
-			fmt.Println("Error parsing YAML file: ", err)
-			os.Exit(1)
+			logger.L().Error("error getting vulnerability scan summaries", helpers.Error(err))
 		}
 
-		cluster, err := api.GetConfigScanSummary(*kubeconfig)
-		if err != nil {
-			log.Fatalf("Error parsing YAML file : %v", err)
-		}
+		metrics.ProcessVulnNamespaceMetrics(vulnScanSummaries)
+		metrics.ProcessVulnClusterMetrics(vulnScanSummaries)
 
-		clustersummary, err := collect.GetConfigscanSeverityValues(cluster)
-		if err != nil {
-			fmt.Println("Error parsing YAML file: ", err)
-			os.Exit(1)
-		}
-
-		vulnns, err := api.GetVulnerabilitySummary(*kubeconfig)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error getting CRD as YAML: %v\n", err)
-			os.Exit(1)
-		}
-		vulnnssummary, err := collect.GetVulnerabilitySeverityValues(vulnns)
-		if err != nil {
-			fmt.Println("Error parsing YAML : ", err)
-			os.Exit(1)
-		}
-
-		vulnclus, err := api.GetVulnerabilitySummary(*kubeconfig)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error getting CRD as YAML: %v\n", err)
-			os.Exit(1)
-		}
-
-		vulnclustersummary, err := collect.GetVulnerabilitySeverityValues(vulnclus)
-		if err != nil {
-			fmt.Println("Error parsing YAML : ", err)
-			os.Exit(1)
-		}
-
-		metrics.ProcessVulnNamespaceMetrics(vulnnssummary)
-		metrics.ProcessVulnClusterMetrics(vulnclustersummary)
-
-		metrics.ProcessConfigscanClusterMetrics(clustersummary)
-		metrics.ProcessConfigscanNamespaceMetrics(nssummary)
+		metrics.ProcessConfigscanClusterMetrics(configScanSummaries)
+		metrics.ProcessConfigscanNamespaceMetrics(configScanSummaries)
 	}
 }

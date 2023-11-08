@@ -32,7 +32,7 @@ This command deploys the Kubescape operator to your cluster, which is responsibl
 
 3. Clone the Repository: Clone the Kubescape Exporter repository from GitHub to your local environment.
 ```
-git clone https://github.com/yrs147/kubescape-exporter.git
+git clone https://github.com/kubescape/prometheus-exporter.git
 ```
 4. Navigate to the Project Directory: Change your working directory to the cloned repository.
 ```
