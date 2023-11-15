@@ -10,8 +10,8 @@ import (
 	"github.com/kubescape/go-logger"
 	"github.com/kubescape/go-logger/helpers"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/yrs147/kubescape-exporter/api"
-	"github.com/yrs147/kubescape-exporter/metrics"
+	"github.com/kubescape/prometheus-exporter/api"
+	"github.com/kubescape/prometheus-exporter/metrics"
 	"k8s.io/client-go/util/homedir"
 )
 
