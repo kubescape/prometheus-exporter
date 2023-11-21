@@ -57,4 +57,5 @@ func main() {
 		metrics.ProcessConfigscanClusterMetrics(configScanSummaries)
 		metrics.ProcessConfigscanNamespaceMetrics(configScanSummaries)
 	}
+	
 }
