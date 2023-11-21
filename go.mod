@@ -1,4 +1,4 @@
-module github.com/yrs147/kubescape-exporter
+module github.com/kubescape/prometheus-exporter
 
 go 1.20
 
