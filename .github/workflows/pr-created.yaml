@@ -20,6 +20,6 @@ jobs:
       security-events: write
     uses: kubescape/workflows/.github/workflows/incluster-comp-pr-created.yaml@main
     with:
-      GO_VERSION: "1.20"
+      GO_VERSION: "1.21"
       CGO_ENABLED: 0
     secrets: inherit
