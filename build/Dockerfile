@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM golang:1.20-alpine as builder
+FROM --platform=$BUILDPLATFORM golang:1.21-bullseye as builder
 
 ENV GO111MODULE=on \
     CGO_ENABLED=0 \

@@ -1,9 +1,8 @@
 package main
 
 import (
-	"fmt"
-	"log"
 	"net/http"
+	"time"
 
 	"github.com/kubescape/go-logger"
 	"github.com/kubescape/go-logger/helpers"
@@ -14,34 +13,45 @@ import (
 
 func main() {
 
-	var storageClient api.StorageClient
-	storageClient = api.NewStorageClient()
+	storageClient := api.NewStorageClient()
 
 	// Start Prometheus HTTP server
 	go func() {
 		http.Handle("/metrics", promhttp.Handler())
-		fmt.Println("Prometheus metrics server started on :8080")
-		log.Fatal(http.ListenAndServe(":8080", nil))
+		logger.L().Info("prometheus metrics server started", helpers.Int("port", 8080), helpers.String("path", "/metrics"))
+		logger.L().Fatal(http.ListenAndServe(":8080", nil).Error())
 	}()
 
 	// monitor the severities in objects
 	for {
+		handleConfigScanSummaries(storageClient)
+		handleVulnScanSummaries(storageClient)
 
-		configScanSummaries, err := storageClient.GetConfigScanSummaries()
-		if err != nil {
-			logger.L().Error("error getting configuration scan summaries", helpers.Error(err))
-		}
-
-		vulnScanSummaries, err := storageClient.GetVulnerabilitySummaries()
-		if err != nil {
-			logger.L().Error("error getting vulnerability scan summaries", helpers.Error(err))
-		}
-
-		metrics.ProcessVulnNamespaceMetrics(vulnScanSummaries)
-		metrics.ProcessVulnClusterMetrics(vulnScanSummaries)
-
-		metrics.ProcessConfigscanClusterMetrics(configScanSummaries)
-		metrics.ProcessConfigscanNamespaceMetrics(configScanSummaries)
+		// FIXME: get interval from config/env
+		time.Sleep(120 * time.Second)
 	}
 
+}
+
+func handleConfigScanSummaries(storageClient *api.StorageClientImpl) {
+	configScanSummaries, err := storageClient.GetConfigScanSummaries()
+	if err != nil {
+		logger.L().Warning("failed getting configuration scan summaries", helpers.Error(err))
+		return
+	}
+
+	metrics.ProcessConfigscanClusterMetrics(configScanSummaries)
+	metrics.ProcessConfigscanNamespaceMetrics(configScanSummaries)
+
+}
+
+func handleVulnScanSummaries(storageClient *api.StorageClientImpl) {
+	vulnScanSummaries, err := storageClient.GetVulnerabilitySummaries()
+	if err != nil {
+		logger.L().Warning("failed getting vulnerability scan summaries", helpers.Error(err))
+		return
+	}
+
+	metrics.ProcessVulnNamespaceMetrics(vulnScanSummaries)
+	metrics.ProcessVulnClusterMetrics(vulnScanSummaries)
 }
