@@ -642,8 +642,8 @@ github.com/anchore/go-testutils v0.0.0-20200925183923-d5f45b0d3c04 h1:VzprUTpc0v
 github.com/anchore/go-testutils v0.0.0-20200925183923-d5f45b0d3c04/go.mod h1:6dK64g27Qi1qGQZ67gFmBFvEHScy0/C8qhQhNe5B5pQ=
 github.com/anchore/packageurl-go v0.1.1-0.20230104203445-02e0a6721501 h1:AV7qjwMcM4r8wFhJq3jLRztew3ywIyPTRapl2T1s9o8=
 github.com/anchore/packageurl-go v0.1.1-0.20230104203445-02e0a6721501/go.mod h1:Blo6OgJNiYF41ufcgHKkbCKF2MDOMlrqhXv/ij6ocR4=
-github.com/anchore/stereoscope v0.0.0-20231117203853-3610f4ef3e83 h1:mxGIOmj+asEm8LUkPTG3/v0hi27WIlDVjiEVsUB9eqY=
-github.com/anchore/stereoscope v0.0.0-20231117203853-3610f4ef3e83/go.mod h1:GKAnytSVV1hoqB5r5Gd9M5Ph3Rzqq0zPdEJesewjC2w=
+github.com/anchore/stereoscope v0.0.1 h1:OxF7PaxMltnAxjLnDMyka+SKRIQar/bBkDdavsnjyxM=
+github.com/anchore/stereoscope v0.0.1/go.mod h1:IylG7ofLoUKHwS1XDF6rPhOmaE3GgpAgsMdvvYfooTU=
 github.com/anchore/syft v0.98.0 h1:mPDah48zZCFeSiGweqPd2C2++rOUh3/cAZylEy1VPwU=
 github.com/anchore/syft v0.98.0/go.mod h1:FMj8zZFF3mP4IAuTxb6n14CZ6ouWXpI9RZqXpnkLK+Y=
 github.com/andreyvit/diff v0.0.0-20170406064948-c7f18ee00883/go.mod h1:rCTlJbsFo29Kk6CurOXKm700vrz8f0KW0JNfpkRJY/8=

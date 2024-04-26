@@ -22,7 +22,7 @@ require (
 	github.com/anchore/fangs v0.0.0-20231103141714-84c94dc43a2e // indirect
 	github.com/anchore/go-logger v0.0.0-20230725134548-c21dafa1ec5a // indirect
 	github.com/anchore/packageurl-go v0.1.1-0.20230104203445-02e0a6721501 // indirect
-	github.com/anchore/stereoscope v0.0.0-20231117203853-3610f4ef3e83 // indirect
+	github.com/anchore/stereoscope v0.0.1 // indirect
 	github.com/anchore/syft v0.98.0 // indirect
 	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/armosec/armoapi-go v0.0.234 // indirect
