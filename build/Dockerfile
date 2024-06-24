@@ -1,11 +1,8 @@
-FROM --platform=$BUILDPLATFORM golang:1.21-bullseye as builder
+FROM --platform=$BUILDPLATFORM golang:1.22-bullseye as builder
 
-ENV GO111MODULE=on \
-    CGO_ENABLED=0 \
-    GOPROXY=https://proxy.golang.org,direct
-
-# Set the working directory inside the container
+ENV GO111MODULE=on CGO_ENABLED=0
 WORKDIR /work
+ARG TARGETOS TARGETARCH
 
 RUN --mount=target=. \
     --mount=type=cache,target=/root/.cache/go-build \
@@ -14,8 +11,12 @@ RUN --mount=target=. \
 
 FROM gcr.io/distroless/static-debian11:nonroot
 
-# Copy the Pre-built binary file from the previous stage
+USER nonroot
+WORKDIR /home/nonroot/
+
 COPY --from=builder /out/prometheus-exporter /usr/bin/prometheus-exporter
 
-# Entry Point
-ENTRYPOINT [ "prometheus-exporter" ]
+ARG image_version
+ENV RELEASE=$image_version
+
+ENTRYPOINT ["prometheus-exporter"]
