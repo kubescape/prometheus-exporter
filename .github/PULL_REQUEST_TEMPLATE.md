@@ -1,10 +1,4 @@
 ## Overview
-This PR fixes #
-
-<!-- **[Signed Commits](../CONTRIBUTING.md#sign-off-per-commit)** -->
-**Signed Commits**
-- [ ] Yes, I signed my commits.
-
 <!-- Please provide a brief overview of the changes made in this pull request. e.g. current behavior/future behavior -->
 
 <!-- 
@@ -50,3 +44,4 @@ put an [x] in the box to get it checked
 **Please open the PR against the `dev` branch (Unless the PR contains only documentation changes)**
 
 -->
+ 
