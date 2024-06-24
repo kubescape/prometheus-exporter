@@ -1,6 +1,6 @@
 module github.com/kubescape/prometheus-exporter
 
-go 1.21.3
+go 1.22.4
 
 require (
 	github.com/kubescape/go-logger v0.0.22
