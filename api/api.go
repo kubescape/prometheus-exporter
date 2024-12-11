@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-
 	"github.com/kubescape/go-logger"
 	"github.com/kubescape/go-logger/helpers"
 	"github.com/kubescape/k8s-interface/k8sinterface"
@@ -33,6 +32,26 @@ func NewStorageClient() *StorageClientImpl {
 	}
 }
 
+func (sc *StorageClientImpl) GetVulnerabilityManifestSummaries() (*v1beta1.VulnerabilityManifestSummaryList, error) {
+	vulnerabilityManifestSummaries, err := sc.clientset.SpdxV1beta1().VulnerabilityManifestSummaries("").List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+	// TODO check if there's a better way instead of looping through all the items which is not efficient (time and memory)
+	// enrich the summary list with the full object as the list only contains the metadata
+	var list v1beta1.VulnerabilityManifestSummaryList
+	for _, vuln := range vulnerabilityManifestSummaries.Items {
+		item, err := sc.clientset.SpdxV1beta1().VulnerabilityManifestSummaries(vuln.Namespace).Get(context.TODO(), vuln.Name, metav1.GetOptions{})
+		if err != nil {
+			return nil, err
+		}
+		list.Items = append(list.Items, *item)
+	}
+
+	return &list, nil
+}
+
 func (sc *StorageClientImpl) GetVulnerabilitySummaries() (*v1beta1.VulnerabilitySummaryList, error) {
 	vulnsummary, err := sc.clientset.SpdxV1beta1().VulnerabilitySummaries("").List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
@@ -41,6 +60,26 @@ func (sc *StorageClientImpl) GetVulnerabilitySummaries() (*v1beta1.Vulnerability
 
 	return vulnsummary, nil
 
+}
+
+func (sc *StorageClientImpl) GetWorkloadConfigurationScanSummaries() (*v1beta1.WorkloadConfigurationScanSummaryList, error) {
+	workloadConfigurationScanSummaries, err := sc.clientset.SpdxV1beta1().WorkloadConfigurationScanSummaries("").List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+	// TODO check if there's a better way instead of looping through all the items which is not efficient (time and memory)
+	// enrich the summary list with the full object as the list only contains the metadata
+	var list v1beta1.WorkloadConfigurationScanSummaryList
+	for _, scan := range workloadConfigurationScanSummaries.Items {
+		item, err := sc.clientset.SpdxV1beta1().WorkloadConfigurationScanSummaries(scan.Namespace).Get(context.TODO(), scan.Name, metav1.GetOptions{})
+		if err != nil {
+			return nil, err
+		}
+		list.Items = append(list.Items, *item)
+	}
+
+	return &list, nil
 }
 
 func (sc *StorageClientImpl) GetConfigScanSummaries() (*v1beta1.ConfigurationScanSummaryList, error) {

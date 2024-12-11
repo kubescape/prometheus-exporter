@@ -27,10 +27,23 @@ func main() {
 		handleConfigScanSummaries(storageClient)
 		handleVulnScanSummaries(storageClient)
 
+		// TODO check if workload metrics should be enabled by default or if they should be enabled by an env variable
+		handleWorkloadConfigScanSummaries(storageClient)
+		handleWorkloadVulnScanSummaries(storageClient)
+
 		// FIXME: get interval from config/env
 		time.Sleep(120 * time.Second)
 	}
 
+}
+
+func handleWorkloadConfigScanSummaries(storageClient *api.StorageClientImpl) {
+	workloadConfigurationScanSummaries, err := storageClient.GetWorkloadConfigurationScanSummaries()
+	if err != nil {
+		logger.L().Warning("failed getting workload configuration scan summaries", helpers.Error(err))
+		return
+	}
+	metrics.ProcessConfigscanWorkloadMetrics(workloadConfigurationScanSummaries)
 }
 
 func handleConfigScanSummaries(storageClient *api.StorageClientImpl) {
@@ -42,7 +55,15 @@ func handleConfigScanSummaries(storageClient *api.StorageClientImpl) {
 
 	metrics.ProcessConfigscanClusterMetrics(configScanSummaries)
 	metrics.ProcessConfigscanNamespaceMetrics(configScanSummaries)
+}
 
+func handleWorkloadVulnScanSummaries(storageClient *api.StorageClientImpl) {
+	vulnerabilityManifestSummaries, err := storageClient.GetVulnerabilityManifestSummaries()
+	if err != nil {
+		logger.L().Warning("failed getting vulnerability manifest summaries", helpers.Error(err))
+		return
+	}
+	metrics.ProcessVulnWorkloadMetrics(vulnerabilityManifestSummaries)
 }
 
 func handleVulnScanSummaries(storageClient *api.StorageClientImpl) {
