@@ -9,6 +9,7 @@ import (
 	spdxclient "github.com/kubescape/storage/pkg/generated/clientset/versioned"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/tools/pager"
 )
 
@@ -31,6 +32,10 @@ func NewStorageClient() *StorageClientImpl {
 	return &StorageClientImpl{
 		clientset: clientset,
 	}
+}
+
+func (sc *StorageClientImpl) WatchVulnerabilityManifestSummaries() (watch.Interface, error) {
+	return sc.clientset.SpdxV1beta1().VulnerabilityManifestSummaries("").Watch(context.Background(), metav1.ListOptions{})
 }
 
 func (sc *StorageClientImpl) GetVulnerabilityManifestSummaries() (*v1beta1.VulnerabilityManifestSummaryList, error) {
@@ -59,6 +64,10 @@ func (sc *StorageClientImpl) GetVulnerabilitySummaries() (*v1beta1.Vulnerability
 
 	return vulnsummary, nil
 
+}
+
+func (sc *StorageClientImpl) WatchWorkloadConfigurationScanSummaries() (watch.Interface, error) {
+	return sc.clientset.SpdxV1beta1().WorkloadConfigurationScanSummaries("").Watch(context.Background(), metav1.ListOptions{})
 }
 
 func (sc *StorageClientImpl) GetWorkloadConfigurationScanSummaries() (*v1beta1.WorkloadConfigurationScanSummaryList, error) {

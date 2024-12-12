@@ -45,6 +45,8 @@ go run main.go
 ```
 The exporter will start collecting security metrics from the Kubernetes cluster and exposing them for Prometheus to scrape.
 
+If you also want to collect metrics on a workload level you need to set an environment variable `ENABLE_WORKLOAD_METRICS=true`. Keep in mind that this will increase the number of metrics exposed by the exporter.
+
 6. Accessing Metrics:
 
 To access the exported metrics directly from the exporter, open your web browser and go to: `http://localhost:8080/metrics`

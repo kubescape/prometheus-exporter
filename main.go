@@ -1,7 +1,10 @@
 package main
 
 import (
+	"github.com/kubescape/storage/pkg/apis/softwarecomposition/v1beta1"
+	"k8s.io/apimachinery/pkg/watch"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/kubescape/go-logger"
@@ -22,19 +25,50 @@ func main() {
 		logger.L().Fatal(http.ListenAndServe(":8080", nil).Error())
 	}()
 
+	if os.Getenv("ENABLE_WORKLOAD_METRICS") == "true" {
+		handleWorkloadConfigScanSummaries(storageClient)
+		handleWorkloadVulnScanSummaries(storageClient)
+		go watchWorkloadConfigScanSummaries(storageClient)
+		go watchWorkloadVulnScanSummaries(storageClient)
+	}
+
 	// monitor the severities in objects
 	for {
 		handleConfigScanSummaries(storageClient)
 		handleVulnScanSummaries(storageClient)
 
-		// TODO check if workload metrics should be enabled by default or if they should be enabled by an env variable
-		handleWorkloadConfigScanSummaries(storageClient)
-		handleWorkloadVulnScanSummaries(storageClient)
-
 		// FIXME: get interval from config/env
 		time.Sleep(120 * time.Second)
 	}
 
+}
+
+func watchWorkloadVulnScanSummaries(storageClient *api.StorageClientImpl) {
+	watcher, _ := storageClient.WatchVulnerabilityManifestSummaries()
+	for event := range watcher.ResultChan() {
+		if event.Type != watch.Added && event.Type != watch.Deleted && event.Type != watch.Modified {
+			continue
+		}
+
+		item := event.Object.(*v1beta1.VulnerabilityManifestSummary)
+		metrics.ProcessVulnWorkloadMetrics(&v1beta1.VulnerabilityManifestSummaryList{
+			Items: []v1beta1.VulnerabilityManifestSummary{*item},
+		})
+	}
+}
+
+func watchWorkloadConfigScanSummaries(storageClient *api.StorageClientImpl) {
+	watcher, _ := storageClient.WatchWorkloadConfigurationScanSummaries()
+	for event := range watcher.ResultChan() {
+		if event.Type != watch.Added && event.Type != watch.Deleted && event.Type != watch.Modified {
+			continue
+		}
+
+		item := event.Object.(*v1beta1.WorkloadConfigurationScanSummary)
+		metrics.ProcessConfigscanWorkloadMetrics(&v1beta1.WorkloadConfigurationScanSummaryList{
+			Items: []v1beta1.WorkloadConfigurationScanSummary{*item},
+		})
+	}
 }
 
 func handleWorkloadConfigScanSummaries(storageClient *api.StorageClientImpl) {

@@ -3,6 +3,7 @@ package metrics
 import (
 	"github.com/kubescape/storage/pkg/apis/softwarecomposition/v1beta1"
 	"github.com/prometheus/client_golang/prometheus"
+	"os"
 	"strings"
 )
 
@@ -232,12 +233,23 @@ var (
 )
 
 func init() {
-	// TODO check if workload metrics should be enabled by default or if they should be enabled by an env variable
-	prometheus.MustRegister(workloadCritical)
-	prometheus.MustRegister(workloadHigh)
-	prometheus.MustRegister(workloadMedium)
-	prometheus.MustRegister(workloadLow)
-	prometheus.MustRegister(workloadUnknown)
+	if os.Getenv("ENABLE_WORKLOAD_METRICS") == "true" {
+		prometheus.MustRegister(workloadCritical)
+		prometheus.MustRegister(workloadHigh)
+		prometheus.MustRegister(workloadMedium)
+		prometheus.MustRegister(workloadLow)
+		prometheus.MustRegister(workloadUnknown)
+		prometheus.MustRegister(workloadVulnCritical)
+		prometheus.MustRegister(workloadVulnHigh)
+		prometheus.MustRegister(workloadVulnMedium)
+		prometheus.MustRegister(workloadVulnLow)
+		prometheus.MustRegister(workloadVulnUnknown)
+		prometheus.MustRegister(workloadVulnCriticalRelevant)
+		prometheus.MustRegister(workloadVulnHighRelevant)
+		prometheus.MustRegister(workloadVulnMediumRelevant)
+		prometheus.MustRegister(workloadVulnLowRelevant)
+		prometheus.MustRegister(workloadVulnUnknownRelevant)
+	}
 	prometheus.MustRegister(namespaceCritical)
 	prometheus.MustRegister(namespaceHigh)
 	prometheus.MustRegister(namespaceMedium)
@@ -248,12 +260,6 @@ func init() {
 	prometheus.MustRegister(clusterMedium)
 	prometheus.MustRegister(clusterLow)
 	prometheus.MustRegister(clusterUnknown)
-	// TODO check if workload metrics should be enabled by default or if they should be enabled by an env variable
-	prometheus.MustRegister(workloadVulnCritical)
-	prometheus.MustRegister(workloadVulnHigh)
-	prometheus.MustRegister(workloadVulnMedium)
-	prometheus.MustRegister(workloadVulnLow)
-	prometheus.MustRegister(workloadVulnUnknown)
 	prometheus.MustRegister(namespaceVulnCritical)
 	prometheus.MustRegister(namespaceVulnHigh)
 	prometheus.MustRegister(namespaceVulnMedium)
@@ -264,12 +270,6 @@ func init() {
 	prometheus.MustRegister(clusterVulnMedium)
 	prometheus.MustRegister(clusterVulnLow)
 	prometheus.MustRegister(clusterVulnUnknown)
-	// TODO check if workload metrics should be enabled by default or if they should be enabled by an env variable
-	prometheus.MustRegister(workloadVulnCriticalRelevant)
-	prometheus.MustRegister(workloadVulnHighRelevant)
-	prometheus.MustRegister(workloadVulnMediumRelevant)
-	prometheus.MustRegister(workloadVulnLowRelevant)
-	prometheus.MustRegister(workloadVulnUnknownRelevant)
 	prometheus.MustRegister(namespaceVulnCriticalRelevant)
 	prometheus.MustRegister(namespaceVulnHighRelevant)
 	prometheus.MustRegister(namespaceVulnMediumRelevant)
