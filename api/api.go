@@ -76,8 +76,8 @@ func (sc *StorageClientImpl) GetWorkloadConfigurationScanSummaries() (*v1beta1.W
 		return sc.clientset.SpdxV1beta1().WorkloadConfigurationScanSummaries("").List(ctx, opts)
 	}).EachListItem(context.TODO(), metav1.ListOptions{}, func(obj runtime.Object) error {
 		// enrich the summary list with the full object as the list only contains the metadata
-		scan := obj.(*v1beta1.WorkloadConfigurationScanSummary)
-		item, err := sc.clientset.SpdxV1beta1().WorkloadConfigurationScanSummaries(scan.Namespace).Get(context.TODO(), scan.Name, metav1.GetOptions{})
+		summary := obj.(*v1beta1.WorkloadConfigurationScanSummary)
+		item, err := sc.clientset.SpdxV1beta1().WorkloadConfigurationScanSummaries(summary.Namespace).Get(context.TODO(), summary.Name, metav1.GetOptions{})
 		if err != nil {
 			return err
 		}

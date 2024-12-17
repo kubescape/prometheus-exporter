@@ -46,28 +46,32 @@ func main() {
 func watchWorkloadVulnScanSummaries(storageClient *api.StorageClientImpl) {
 	watcher, _ := storageClient.WatchVulnerabilityManifestSummaries()
 	for event := range watcher.ResultChan() {
-		if event.Type != watch.Added && event.Type != watch.Deleted && event.Type != watch.Modified {
-			continue
+		item := event.Object.(*v1beta1.VulnerabilityManifestSummary)
+		if event.Type == watch.Added || event.Type == watch.Modified {
+			metrics.ProcessVulnWorkloadMetrics(&v1beta1.VulnerabilityManifestSummaryList{
+				Items: []v1beta1.VulnerabilityManifestSummary{*item},
+			})
 		}
 
-		item := event.Object.(*v1beta1.VulnerabilityManifestSummary)
-		metrics.ProcessVulnWorkloadMetrics(&v1beta1.VulnerabilityManifestSummaryList{
-			Items: []v1beta1.VulnerabilityManifestSummary{*item},
-		})
+		if event.Type == watch.Deleted {
+			metrics.DeleteVulnWorkloadMetric(item)
+		}
 	}
 }
 
 func watchWorkloadConfigScanSummaries(storageClient *api.StorageClientImpl) {
 	watcher, _ := storageClient.WatchWorkloadConfigurationScanSummaries()
 	for event := range watcher.ResultChan() {
-		if event.Type != watch.Added && event.Type != watch.Deleted && event.Type != watch.Modified {
-			continue
+		item := event.Object.(*v1beta1.WorkloadConfigurationScanSummary)
+		if event.Type == watch.Added || event.Type == watch.Modified {
+			metrics.ProcessConfigscanWorkloadMetrics(&v1beta1.WorkloadConfigurationScanSummaryList{
+				Items: []v1beta1.WorkloadConfigurationScanSummary{*item},
+			})
 		}
 
-		item := event.Object.(*v1beta1.WorkloadConfigurationScanSummary)
-		metrics.ProcessConfigscanWorkloadMetrics(&v1beta1.WorkloadConfigurationScanSummaryList{
-			Items: []v1beta1.WorkloadConfigurationScanSummary{*item},
-		})
+		if event.Type == watch.Deleted {
+			metrics.DeleteConfigscanWorkloadMetric(item)
+		}
 	}
 }
 

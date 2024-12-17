@@ -15,9 +15,10 @@ func TestProcessVulnWorkloadMetrics(t *testing.T) {
 			{
 				ObjectMeta: metav1.ObjectMeta{
 					Labels: map[string]string{
-						"kubescape.io/workload-name":      "name1",
-						"kubescape.io/workload-kind":      "deployment",
-						"kubescape.io/workload-namespace": "namespace1",
+						"kubescape.io/workload-name":           "name1",
+						"kubescape.io/workload-kind":           "deployment",
+						"kubescape.io/workload-namespace":      "namespace1",
+						"kubescape.io/workload-container-name": "container1",
 					},
 				},
 				Spec: v1beta1.VulnerabilityManifestSummarySpec{
@@ -48,9 +49,10 @@ func TestProcessVulnWorkloadMetrics(t *testing.T) {
 			{
 				ObjectMeta: metav1.ObjectMeta{
 					Labels: map[string]string{
-						"kubescape.io/workload-name":      "name2",
-						"kubescape.io/workload-kind":      "deployment",
-						"kubescape.io/workload-namespace": "namespace2",
+						"kubescape.io/workload-name":           "name2",
+						"kubescape.io/workload-kind":           "deployment",
+						"kubescape.io/workload-namespace":      "namespace2",
+						"kubescape.io/workload-container-name": "container2",
 					},
 				},
 				Spec: v1beta1.VulnerabilityManifestSummarySpec{
@@ -94,17 +96,17 @@ func TestProcessVulnWorkloadMetrics(t *testing.T) {
 	relevantLow := &dto.Metric{}
 	relevantUnknown := &dto.Metric{}
 
-	ggeWorkloadVulnCritical, _ := workloadVulnCritical.GetMetricWithLabelValues("namespace1", "name1", "deployment")
-	ggeWorkloadVulnHigh, _ := workloadVulnHigh.GetMetricWithLabelValues("namespace1", "name1", "deployment")
-	ggeWorkloadVulnMedium, _ := workloadVulnMedium.GetMetricWithLabelValues("namespace1", "name1", "deployment")
-	ggeWorkloadVulnLow, _ := workloadVulnLow.GetMetricWithLabelValues("namespace1", "name1", "deployment")
-	ggeWorkloadVulnUnknown, _ := workloadVulnUnknown.GetMetricWithLabelValues("namespace1", "name1", "deployment")
+	ggeWorkloadVulnCritical, _ := workloadVulnCritical.GetMetricWithLabelValues("namespace1", "name1", "deployment", "container1")
+	ggeWorkloadVulnHigh, _ := workloadVulnHigh.GetMetricWithLabelValues("namespace1", "name1", "deployment", "container1")
+	ggeWorkloadVulnMedium, _ := workloadVulnMedium.GetMetricWithLabelValues("namespace1", "name1", "deployment", "container1")
+	ggeWorkloadVulnLow, _ := workloadVulnLow.GetMetricWithLabelValues("namespace1", "name1", "deployment", "container1")
+	ggeWorkloadVulnUnknown, _ := workloadVulnUnknown.GetMetricWithLabelValues("namespace1", "name1", "deployment", "container1")
 
-	ggeWorkloadVulnCriticalRelevant, _ := workloadVulnCriticalRelevant.GetMetricWithLabelValues("namespace1", "name1", "deployment")
-	ggeWorkloadVulnHighRelevant, _ := workloadVulnHighRelevant.GetMetricWithLabelValues("namespace1", "name1", "deployment")
-	ggeWorkloadVulnMediumRelevant, _ := workloadVulnMediumRelevant.GetMetricWithLabelValues("namespace1", "name1", "deployment")
-	ggeWorkloadVulnLowRelevant, _ := workloadVulnLowRelevant.GetMetricWithLabelValues("namespace1", "name1", "deployment")
-	ggeWorkloadVulnUnknownRelevant, _ := workloadVulnUnknownRelevant.GetMetricWithLabelValues("namespace1", "name1", "deployment")
+	ggeWorkloadVulnCriticalRelevant, _ := workloadVulnCriticalRelevant.GetMetricWithLabelValues("namespace1", "name1", "deployment", "container1")
+	ggeWorkloadVulnHighRelevant, _ := workloadVulnHighRelevant.GetMetricWithLabelValues("namespace1", "name1", "deployment", "container1")
+	ggeWorkloadVulnMediumRelevant, _ := workloadVulnMediumRelevant.GetMetricWithLabelValues("namespace1", "name1", "deployment", "container1")
+	ggeWorkloadVulnLowRelevant, _ := workloadVulnLowRelevant.GetMetricWithLabelValues("namespace1", "name1", "deployment", "container1")
+	ggeWorkloadVulnUnknownRelevant, _ := workloadVulnUnknownRelevant.GetMetricWithLabelValues("namespace1", "name1", "deployment", "container1")
 
 	_ = ggeWorkloadVulnCritical.Write(allCritical)
 	_ = ggeWorkloadVulnHigh.Write(allHigh)
