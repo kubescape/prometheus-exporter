@@ -1,11 +1,135 @@
 package metrics
 
 import (
+	dto "github.com/prometheus/client_model/go"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"testing"
 
 	"github.com/kubescape/storage/pkg/apis/softwarecomposition/v1beta1"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestProcessVulnWorkloadMetrics(t *testing.T) {
+	vulnerabilityManifestSummaries := &v1beta1.VulnerabilityManifestSummaryList{
+		Items: []v1beta1.VulnerabilityManifestSummary{
+			{
+				ObjectMeta: metav1.ObjectMeta{
+					Labels: map[string]string{
+						"kubescape.io/workload-name":           "name1",
+						"kubescape.io/workload-kind":           "deployment",
+						"kubescape.io/workload-namespace":      "namespace1",
+						"kubescape.io/workload-container-name": "container1",
+					},
+				},
+				Spec: v1beta1.VulnerabilityManifestSummarySpec{
+					Severities: v1beta1.SeveritySummary{
+						Critical: v1beta1.VulnerabilityCounters{
+							All:      3,
+							Relevant: 2,
+						},
+						High: v1beta1.VulnerabilityCounters{
+							All:      5,
+							Relevant: 4,
+						},
+						Medium: v1beta1.VulnerabilityCounters{
+							All:      10,
+							Relevant: 8,
+						},
+						Low: v1beta1.VulnerabilityCounters{
+							All:      20,
+							Relevant: 15,
+						},
+						Unknown: v1beta1.VulnerabilityCounters{
+							All:      7,
+							Relevant: 3,
+						},
+					},
+				},
+			},
+			{
+				ObjectMeta: metav1.ObjectMeta{
+					Labels: map[string]string{
+						"kubescape.io/workload-name":           "name2",
+						"kubescape.io/workload-kind":           "deployment",
+						"kubescape.io/workload-namespace":      "namespace2",
+						"kubescape.io/workload-container-name": "container2",
+					},
+				},
+				Spec: v1beta1.VulnerabilityManifestSummarySpec{
+					Severities: v1beta1.SeveritySummary{
+						Critical: v1beta1.VulnerabilityCounters{
+							All:      1,
+							Relevant: 15,
+						},
+						High: v1beta1.VulnerabilityCounters{
+							All:      9,
+							Relevant: 4,
+						},
+						Medium: v1beta1.VulnerabilityCounters{
+							All:      3,
+							Relevant: 5,
+						},
+						Low: v1beta1.VulnerabilityCounters{
+							All:      7,
+							Relevant: 3,
+						},
+						Unknown: v1beta1.VulnerabilityCounters{
+							All:      2,
+							Relevant: 5,
+						},
+					},
+				},
+			},
+		},
+	}
+
+	ProcessVulnWorkloadMetrics(vulnerabilityManifestSummaries)
+
+	allCritical := &dto.Metric{}
+	allHigh := &dto.Metric{}
+	allMedium := &dto.Metric{}
+	allLow := &dto.Metric{}
+	allUnknown := &dto.Metric{}
+	relevantCritical := &dto.Metric{}
+	relevantHigh := &dto.Metric{}
+	relevantMedium := &dto.Metric{}
+	relevantLow := &dto.Metric{}
+	relevantUnknown := &dto.Metric{}
+
+	ggeWorkloadVulnCritical, _ := workloadVulnCritical.GetMetricWithLabelValues("namespace1", "name1", "deployment", "container1")
+	ggeWorkloadVulnHigh, _ := workloadVulnHigh.GetMetricWithLabelValues("namespace1", "name1", "deployment", "container1")
+	ggeWorkloadVulnMedium, _ := workloadVulnMedium.GetMetricWithLabelValues("namespace1", "name1", "deployment", "container1")
+	ggeWorkloadVulnLow, _ := workloadVulnLow.GetMetricWithLabelValues("namespace1", "name1", "deployment", "container1")
+	ggeWorkloadVulnUnknown, _ := workloadVulnUnknown.GetMetricWithLabelValues("namespace1", "name1", "deployment", "container1")
+
+	ggeWorkloadVulnCriticalRelevant, _ := workloadVulnCriticalRelevant.GetMetricWithLabelValues("namespace1", "name1", "deployment", "container1")
+	ggeWorkloadVulnHighRelevant, _ := workloadVulnHighRelevant.GetMetricWithLabelValues("namespace1", "name1", "deployment", "container1")
+	ggeWorkloadVulnMediumRelevant, _ := workloadVulnMediumRelevant.GetMetricWithLabelValues("namespace1", "name1", "deployment", "container1")
+	ggeWorkloadVulnLowRelevant, _ := workloadVulnLowRelevant.GetMetricWithLabelValues("namespace1", "name1", "deployment", "container1")
+	ggeWorkloadVulnUnknownRelevant, _ := workloadVulnUnknownRelevant.GetMetricWithLabelValues("namespace1", "name1", "deployment", "container1")
+
+	_ = ggeWorkloadVulnCritical.Write(allCritical)
+	_ = ggeWorkloadVulnHigh.Write(allHigh)
+	_ = ggeWorkloadVulnMedium.Write(allMedium)
+	_ = ggeWorkloadVulnLow.Write(allLow)
+	_ = ggeWorkloadVulnUnknown.Write(allUnknown)
+	_ = ggeWorkloadVulnCriticalRelevant.Write(relevantCritical)
+	_ = ggeWorkloadVulnHighRelevant.Write(relevantHigh)
+	_ = ggeWorkloadVulnMediumRelevant.Write(relevantMedium)
+	_ = ggeWorkloadVulnLowRelevant.Write(relevantLow)
+	_ = ggeWorkloadVulnUnknownRelevant.Write(relevantUnknown)
+
+	assert.Equal(t, float64(3), allCritical.Gauge.GetValue(), "Expected allCritical to be 3")
+	assert.Equal(t, float64(5), allHigh.Gauge.GetValue(), "Expected allHigh to be 5")
+	assert.Equal(t, float64(10), allMedium.Gauge.GetValue(), "Expected allMedium to be 10")
+	assert.Equal(t, float64(20), allLow.Gauge.GetValue(), "Expected allLow to be 20")
+	assert.Equal(t, float64(7), allUnknown.Gauge.GetValue(), "Expected allUnknown to be 7")
+	assert.Equal(t, float64(2), relevantCritical.Gauge.GetValue(), "Expected relevantCritical to be 2")
+	assert.Equal(t, float64(4), relevantHigh.Gauge.GetValue(), "Expected relevantHigh to be 4")
+	assert.Equal(t, float64(8), relevantMedium.Gauge.GetValue(), "Expected relevantMedium to be 8")
+	assert.Equal(t, float64(15), relevantLow.Gauge.GetValue(), "Expected relevantLow to be 15")
+	assert.Equal(t, float64(3), relevantUnknown.Gauge.GetValue(), "Expected relevantUnknown to be 3")
+}
 
 func TestProcessVulnClusterMetrics(t *testing.T) {
 	// Create a fake VulnerabilitySummaryList
@@ -79,6 +203,57 @@ func TestProcessVulnClusterMetrics(t *testing.T) {
 	assert.Equal(t, 18, relevantLow, "Expected relevantLow to be 18")
 	assert.Equal(t, 8, relevantUnknown, "Expected relevantUnknown to be 8")
 
+}
+
+func TestProcessConfigscanWorkloadMetrics(t *testing.T) {
+	workloadConfigurationScanSummaries := &v1beta1.WorkloadConfigurationScanSummaryList{
+		Items: []v1beta1.WorkloadConfigurationScanSummary{
+			{
+				ObjectMeta: metav1.ObjectMeta{
+					Labels: map[string]string{
+						"kubescape.io/workload-name":      "name1",
+						"kubescape.io/workload-kind":      "ServiceAccount",
+						"kubescape.io/workload-namespace": "namespace1",
+					},
+				},
+				Spec: v1beta1.WorkloadConfigurationScanSummarySpec{
+					Severities: v1beta1.WorkloadConfigurationScanSeveritiesSummary{
+						Critical: 3,
+						High:     5,
+						Medium:   10,
+						Low:      20,
+						Unknown:  7,
+					},
+				},
+			},
+		},
+	}
+
+	ProcessConfigscanWorkloadMetrics(workloadConfigurationScanSummaries)
+
+	critical := &dto.Metric{}
+	high := &dto.Metric{}
+	medium := &dto.Metric{}
+	low := &dto.Metric{}
+	unknown := &dto.Metric{}
+
+	ggeWorkloadCritical, _ := workloadCritical.GetMetricWithLabelValues("namespace1", "name1", "serviceaccount")
+	ggeWorkloadHigh, _ := workloadHigh.GetMetricWithLabelValues("namespace1", "name1", "serviceaccount")
+	ggeWorkloadMedium, _ := workloadMedium.GetMetricWithLabelValues("namespace1", "name1", "serviceaccount")
+	ggeWorkloadLow, _ := workloadLow.GetMetricWithLabelValues("namespace1", "name1", "serviceaccount")
+	ggeWorkloadUnknown, _ := workloadUnknown.GetMetricWithLabelValues("namespace1", "name1", "serviceaccount")
+
+	_ = ggeWorkloadCritical.Write(critical)
+	_ = ggeWorkloadHigh.Write(high)
+	_ = ggeWorkloadMedium.Write(medium)
+	_ = ggeWorkloadLow.Write(low)
+	_ = ggeWorkloadUnknown.Write(unknown)
+
+	assert.Equal(t, float64(3), critical.Gauge.GetValue(), "Expected allCritical to be 3")
+	assert.Equal(t, float64(5), high.Gauge.GetValue(), "Expected allHigh to be 5")
+	assert.Equal(t, float64(10), medium.Gauge.GetValue(), "Expected allMedium to be 10")
+	assert.Equal(t, float64(20), low.Gauge.GetValue(), "Expected allLow to be 20")
+	assert.Equal(t, float64(7), unknown.Gauge.GetValue(), "Expected allUnknown to be 7")
 }
 
 func TestProcessConfigscanClusterMetrics(t *testing.T) {
