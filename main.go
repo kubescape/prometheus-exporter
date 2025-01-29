@@ -1,8 +1,6 @@
 package main
 
 import (
-	"github.com/kubescape/storage/pkg/apis/softwarecomposition/v1beta1"
-	"k8s.io/apimachinery/pkg/watch"
 	"net/http"
 	"os"
 	"time"
@@ -11,7 +9,9 @@ import (
 	"github.com/kubescape/go-logger/helpers"
 	"github.com/kubescape/prometheus-exporter/api"
 	"github.com/kubescape/prometheus-exporter/metrics"
+	"github.com/kubescape/storage/pkg/apis/softwarecomposition/v1beta1"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"k8s.io/apimachinery/pkg/watch"
 )
 
 func main() {
@@ -46,7 +46,10 @@ func main() {
 func watchWorkloadVulnScanSummaries(storageClient *api.StorageClientImpl) {
 	watcher, _ := storageClient.WatchVulnerabilityManifestSummaries()
 	for event := range watcher.ResultChan() {
-		item := event.Object.(*v1beta1.VulnerabilityManifestSummary)
+		item, ok := event.Object.(*v1beta1.VulnerabilityManifestSummary)
+		if !ok {
+			continue
+		}
 		if event.Type == watch.Added || event.Type == watch.Modified {
 			metrics.ProcessVulnWorkloadMetrics(&v1beta1.VulnerabilityManifestSummaryList{
 				Items: []v1beta1.VulnerabilityManifestSummary{*item},
@@ -62,7 +65,10 @@ func watchWorkloadVulnScanSummaries(storageClient *api.StorageClientImpl) {
 func watchWorkloadConfigScanSummaries(storageClient *api.StorageClientImpl) {
 	watcher, _ := storageClient.WatchWorkloadConfigurationScanSummaries()
 	for event := range watcher.ResultChan() {
-		item := event.Object.(*v1beta1.WorkloadConfigurationScanSummary)
+		item, ok := event.Object.(*v1beta1.WorkloadConfigurationScanSummary)
+		if !ok {
+			continue
+		}
 		if event.Type == watch.Added || event.Type == watch.Modified {
 			metrics.ProcessConfigscanWorkloadMetrics(&v1beta1.WorkloadConfigurationScanSummaryList{
 				Items: []v1beta1.WorkloadConfigurationScanSummary{*item},
