@@ -1,10 +1,11 @@
 package metrics
 
 import (
-	"github.com/kubescape/storage/pkg/apis/softwarecomposition/v1beta1"
-	"github.com/prometheus/client_golang/prometheus"
 	"os"
 	"strings"
+
+	"github.com/kubescape/storage/pkg/apis/softwarecomposition/v1beta1"
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 var (
@@ -319,7 +320,7 @@ func ProcessConfigscanNamespaceMetrics(summary *v1beta1.ConfigurationScanSummary
 	}
 }
 
-func ProcessConfigscanClusterMetrics(summary *v1beta1.ConfigurationScanSummaryList) (totalCritical int, totalHigh int, totalLow int, totalMedium int, totalUnknown int) {
+func ProcessConfigscanClusterMetrics(summary *v1beta1.ConfigurationScanSummaryList) (totalCritical, totalHigh, totalLow, totalMedium, totalUnknown int64) {
 
 	for _, item := range summary.Items {
 		totalCritical += item.Spec.Severities.Critical
@@ -392,7 +393,7 @@ func ProcessVulnNamespaceMetrics(summary *v1beta1.VulnerabilitySummaryList) {
 	}
 }
 
-func ProcessVulnClusterMetrics(summary *v1beta1.VulnerabilitySummaryList) (totalCritical int, totalHigh int, totalLow int, totalMedium int, totalUnknown int, relevantCritical int, relevantHigh int, relevantLow int, relevantMedium int, relevantUnknown int) {
+func ProcessVulnClusterMetrics(summary *v1beta1.VulnerabilitySummaryList) (totalCritical, totalHigh, totalLow, totalMedium, totalUnknown, relevantCritical, relevantHigh, relevantLow, relevantMedium, relevantUnknown int64) {
 
 	for _, item := range summary.Items {
 		totalCritical += item.Spec.Severities.Critical.All

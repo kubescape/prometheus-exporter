@@ -1,12 +1,12 @@
 package metrics
 
 import (
-	dto "github.com/prometheus/client_model/go"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"testing"
 
 	"github.com/kubescape/storage/pkg/apis/softwarecomposition/v1beta1"
+	dto "github.com/prometheus/client_model/go"
 	"github.com/stretchr/testify/assert"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func TestProcessVulnWorkloadMetrics(t *testing.T) {
@@ -192,16 +192,16 @@ func TestProcessVulnClusterMetrics(t *testing.T) {
 
 	totalCritical, totalHigh, totalMedium, totalLow, totalUnknown, relevantCritical, relevantHigh, relevantMedium, relevantLow, relevantUnknown := ProcessVulnClusterMetrics(vulnSummary)
 
-	assert.Equal(t, 4, totalCritical, "Expected totalCritical to be 4")
-	assert.Equal(t, 14, totalHigh, "Expected totalHigh to be 14")
-	assert.Equal(t, 13, totalMedium, "Expected totalMedium to be 13")
-	assert.Equal(t, 27, totalLow, "Expected totalLow to be 27")
-	assert.Equal(t, 9, totalUnknown, "Expected totalUnknown to be 9")
-	assert.Equal(t, 17, relevantCritical, "Expected relevantCritical to be 17")
-	assert.Equal(t, 8, relevantHigh, "Expected relevantHigh to be 8")
-	assert.Equal(t, 13, relevantMedium, "Expected relevantMedium to be 13")
-	assert.Equal(t, 18, relevantLow, "Expected relevantLow to be 18")
-	assert.Equal(t, 8, relevantUnknown, "Expected relevantUnknown to be 8")
+	assert.Equal(t, int64(4), totalCritical)
+	assert.Equal(t, int64(14), totalHigh)
+	assert.Equal(t, int64(13), totalMedium)
+	assert.Equal(t, int64(27), totalLow)
+	assert.Equal(t, int64(9), totalUnknown)
+	assert.Equal(t, int64(17), relevantCritical)
+	assert.Equal(t, int64(8), relevantHigh)
+	assert.Equal(t, int64(13), relevantMedium)
+	assert.Equal(t, int64(18), relevantLow)
+	assert.Equal(t, int64(8), relevantUnknown)
 
 }
 
@@ -298,9 +298,9 @@ func TestProcessConfigscanClusterMetrics(t *testing.T) {
 
 	totalCritical, totalHigh, totalMedium, totalLow, totalUnknown := ProcessConfigscanClusterMetrics(csSummary)
 
-	assert.Equal(t, 16, totalCritical, "Expected totalCritical to be 16")
-	assert.Equal(t, 14, totalHigh, "Expected totalHigh to be 14")
-	assert.Equal(t, 11, totalMedium, "Expected totalMedium to be 11")
-	assert.Equal(t, 17, totalLow, "Expected totalLow to be 17")
-	assert.Equal(t, 7, totalUnknown, "Expected totalUnknown to be 7")
+	assert.Equal(t, int64(16), totalCritical)
+	assert.Equal(t, int64(14), totalHigh)
+	assert.Equal(t, int64(11), totalMedium)
+	assert.Equal(t, int64(17), totalLow)
+	assert.Equal(t, int64(7), totalUnknown)
 }
