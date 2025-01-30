@@ -35,7 +35,8 @@ func NewStorageClient() *StorageClientImpl {
 }
 
 func (sc *StorageClientImpl) WatchVulnerabilityManifestSummaries() (watch.Interface, error) {
-	return sc.clientset.SpdxV1beta1().VulnerabilityManifestSummaries("").Watch(context.Background(), metav1.ListOptions{})
+	// we need to pass the fullSpec resource version to get the full spec in Watch
+	return sc.clientset.SpdxV1beta1().VulnerabilityManifestSummaries("").Watch(context.Background(), metav1.ListOptions{ResourceVersion: softwarecomposition.ResourceVersionFullSpec})
 }
 
 func (sc *StorageClientImpl) GetVulnerabilityManifestSummaries() (*v1beta1.VulnerabilityManifestSummaryList, error) {
@@ -49,7 +50,8 @@ func (sc *StorageClientImpl) GetVulnerabilitySummaries() (*v1beta1.Vulnerability
 }
 
 func (sc *StorageClientImpl) WatchWorkloadConfigurationScanSummaries() (watch.Interface, error) {
-	return sc.clientset.SpdxV1beta1().WorkloadConfigurationScanSummaries("").Watch(context.Background(), metav1.ListOptions{})
+	// we need to pass the fullSpec resource version to get the full spec in Watch
+	return sc.clientset.SpdxV1beta1().WorkloadConfigurationScanSummaries("").Watch(context.Background(), metav1.ListOptions{ResourceVersion: softwarecomposition.ResourceVersionFullSpec})
 }
 
 func (sc *StorageClientImpl) GetWorkloadConfigurationScanSummaries() (*v1beta1.WorkloadConfigurationScanSummaryList, error) {

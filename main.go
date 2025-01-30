@@ -26,13 +26,11 @@ func main() {
 	}()
 
 	if os.Getenv("ENABLE_WORKLOAD_METRICS") == "true" {
-		handleWorkloadConfigScanSummaries(storageClient)
-		handleWorkloadVulnScanSummaries(storageClient)
 		go watchWorkloadConfigScanSummaries(storageClient)
 		go watchWorkloadVulnScanSummaries(storageClient)
 	}
 
-	// monitor the severities in objects
+	// monitor the severities in objects (no watch available)
 	for {
 		handleConfigScanSummaries(storageClient)
 		handleVulnScanSummaries(storageClient)
@@ -44,12 +42,16 @@ func main() {
 }
 
 func watchWorkloadVulnScanSummaries(storageClient *api.StorageClientImpl) {
+	// insert the existing items
+	handleWorkloadVulnScanSummaries(storageClient)
+	// watch for new items
 	watcher, _ := storageClient.WatchVulnerabilityManifestSummaries()
 	for event := range watcher.ResultChan() {
 		item, ok := event.Object.(*v1beta1.VulnerabilityManifestSummary)
 		if !ok {
 			continue
 		}
+		logger.L().Debug("received event", helpers.Interface("event", event), helpers.String("name", item.Name))
 		if event.Type == watch.Added || event.Type == watch.Modified {
 			metrics.ProcessVulnWorkloadMetrics(&v1beta1.VulnerabilityManifestSummaryList{
 				Items: []v1beta1.VulnerabilityManifestSummary{*item},
@@ -63,12 +65,16 @@ func watchWorkloadVulnScanSummaries(storageClient *api.StorageClientImpl) {
 }
 
 func watchWorkloadConfigScanSummaries(storageClient *api.StorageClientImpl) {
+	// insert the existing items
+	handleWorkloadConfigScanSummaries(storageClient)
+	// watch for new items
 	watcher, _ := storageClient.WatchWorkloadConfigurationScanSummaries()
 	for event := range watcher.ResultChan() {
 		item, ok := event.Object.(*v1beta1.WorkloadConfigurationScanSummary)
 		if !ok {
 			continue
 		}
+		logger.L().Debug("received event", helpers.Interface("event", event), helpers.String("name", item.Name))
 		if event.Type == watch.Added || event.Type == watch.Modified {
 			metrics.ProcessConfigscanWorkloadMetrics(&v1beta1.WorkloadConfigurationScanSummaryList{
 				Items: []v1beta1.WorkloadConfigurationScanSummary{*item},
