@@ -35,13 +35,19 @@ func main() {
 		go watchWorkloadVulnScanSummaries(storageClient)
 	}
 
+	interval := os.Getenv("PROMETHEUS_REFRESH_INTERVAL")
+	refreshInterval, err := time.ParseDuration(interval)
+	if err != nil {
+		logger.L().Warning("failed to get refresh interval, using default 120s", helpers.Error(err))
+		refreshInterval = 10 * time.Second
+	}
+
 	// monitor the severities in objects (no watch available)
 	for {
 		handleConfigScanSummaries(storageClient)
 		handleVulnScanSummaries(storageClient)
 
-		// FIXME: get interval from config/env
-		time.Sleep(120 * time.Second)
+		time.Sleep(refreshInterval)
 	}
 
 }
