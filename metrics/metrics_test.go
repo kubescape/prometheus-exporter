@@ -190,7 +190,7 @@ func TestProcessVulnClusterMetrics(t *testing.T) {
 		},
 	}
 
-	totalCritical, totalHigh, totalMedium, totalLow, totalUnknown, relevantCritical, relevantHigh, relevantMedium, relevantLow, relevantUnknown := ProcessVulnClusterMetrics(vulnSummary)
+	totalCritical, totalHigh, totalLow, totalMedium, totalUnknown, relevantCritical, relevantHigh, relevantLow, relevantMedium, relevantUnknown := ProcessVulnClusterMetrics(vulnSummary)
 
 	assert.Equal(t, int64(4), totalCritical)
 	assert.Equal(t, int64(14), totalHigh)
@@ -296,7 +296,7 @@ func TestProcessConfigscanClusterMetrics(t *testing.T) {
 		},
 	}
 
-	totalCritical, totalHigh, totalMedium, totalLow, totalUnknown := ProcessConfigscanClusterMetrics(csSummary)
+	totalCritical, totalHigh, totalLow, totalMedium, totalUnknown := ProcessConfigscanClusterMetrics(csSummary)
 
 	assert.Equal(t, int64(16), totalCritical)
 	assert.Equal(t, int64(14), totalHigh)
