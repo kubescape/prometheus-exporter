@@ -336,7 +336,7 @@ func ProcessConfigscanClusterMetrics(summary *v1beta1.ConfigurationScanSummaryLi
 	clusterMedium.Set(float64(totalMedium))
 	clusterUnknown.Set(float64(totalUnknown))
 
-	return totalCritical, totalHigh, totalMedium, totalLow, totalUnknown
+	return
 }
 
 func ProcessVulnWorkloadMetrics(summary *v1beta1.VulnerabilityManifestSummaryList) {
@@ -420,5 +420,5 @@ func ProcessVulnClusterMetrics(summary *v1beta1.VulnerabilitySummaryList) (total
 	clusterVulnLowRelevant.Set(float64(relevantLow))
 	clusterVulnUnknownRelevant.Set(float64(relevantUnknown))
 
-	return totalCritical, totalHigh, totalMedium, totalLow, totalUnknown, relevantCritical, relevantHigh, relevantMedium, relevantLow, relevantUnknown
+	return
 }
