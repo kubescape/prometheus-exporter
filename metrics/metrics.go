@@ -103,6 +103,11 @@ var (
 		Help: "Total number of low vulnerabilities in the workload",
 	}, []string{"namespace", "workload", "workload_kind", "workload_container_name"})
 
+	workloadVulnNegligible = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "kubescape_vulnerabilities_total_workload_negligible",
+		Help: "Total number of negligible vulnerabilities in the workload",
+	}, []string{"namespace", "workload", "workload_kind", "workload_container_name"})
+
 	workloadVulnUnknown = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Name: "kubescape_vulnerabilities_total_workload_unknown",
 		Help: "Total number of unknown vulnerabilities in the workload",
@@ -128,6 +133,11 @@ var (
 		Help: "Total number of low vulnerabilities in the namespace",
 	}, []string{"namespace"})
 
+	namespaceVulnNegligible = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "kubescape_vulnerabilities_total_namespace_negligible",
+		Help: "Total number of negligible vulnerabilities in the namespace",
+	}, []string{"namespace"})
+
 	namespaceVulnUnknown = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Name: "kubescape_vulnerabilities_total_namespace_unknown",
 		Help: "Total number of unknown vulnerabilities in the namespace",
@@ -150,6 +160,11 @@ var (
 	clusterVulnLow = prometheus.NewGauge(prometheus.GaugeOpts{
 		Name: "kubescape_vulnerabilities_total_cluster_low",
 		Help: "Total number of low vulnerabilities in the cluster",
+	})
+
+	clusterVulnNegligible = prometheus.NewGauge(prometheus.GaugeOpts{
+		Name: "kubescape_vulnerabilities_total_cluster_negligible",
+		Help: "Total number of negligible vulnerabilities in the cluster",
 	})
 
 	clusterVulnUnknown = prometheus.NewGauge(prometheus.GaugeOpts{
@@ -177,6 +192,11 @@ var (
 		Help: "Number of relevant low vulnerabilities in the workload",
 	}, []string{"namespace", "workload", "workload_kind", "workload_container_name"})
 
+	workloadVulnNegligibleRelevant = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "kubescape_vulnerabilities_relevant_workload_negligible",
+		Help: "Number of relevant negligible vulnerabilities in the workload",
+	}, []string{"namespace", "workload", "workload_kind", "workload_container_name"})
+
 	workloadVulnUnknownRelevant = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Name: "kubescape_vulnerabilities_relevant_workload_unknown",
 		Help: "Number of relevant unknown vulnerabilities in the workload",
@@ -200,6 +220,11 @@ var (
 	namespaceVulnLowRelevant = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Name: "kubescape_vulnerabilities_relevant_namespace_low",
 		Help: "Number of relevant low vulnerabilities in the namespace",
+	}, []string{"namespace"})
+
+	namespaceVulnNegligibleRelevant = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "kubescape_vulnerabilities_relevant_namespace_negligible",
+		Help: "Number of relevant negligible vulnerabilities in the namespace",
 	}, []string{"namespace"})
 
 	namespaceVulnUnknownRelevant = prometheus.NewGaugeVec(prometheus.GaugeOpts{
@@ -227,6 +252,11 @@ var (
 		Help: "Number of relevant low vulnerabilities in the cluster",
 	})
 
+	clusterVulnNegligibleRelevant = prometheus.NewGauge(prometheus.GaugeOpts{
+		Name: "kubescape_vulnerabilities_relevant_cluster_negligible",
+		Help: "Number of relevant negligible vulnerabilities in the cluster",
+	})
+
 	clusterVulnUnknownRelevant = prometheus.NewGauge(prometheus.GaugeOpts{
 		Name: "kubescape_vulnerabilities_relevant_cluster_unknown",
 		Help: "Number of relevant unknown vulnerabilities in the cluster",
@@ -244,11 +274,13 @@ func init() {
 		prometheus.MustRegister(workloadVulnHigh)
 		prometheus.MustRegister(workloadVulnMedium)
 		prometheus.MustRegister(workloadVulnLow)
+		prometheus.MustRegister(workloadVulnNegligible)
 		prometheus.MustRegister(workloadVulnUnknown)
 		prometheus.MustRegister(workloadVulnCriticalRelevant)
 		prometheus.MustRegister(workloadVulnHighRelevant)
 		prometheus.MustRegister(workloadVulnMediumRelevant)
 		prometheus.MustRegister(workloadVulnLowRelevant)
+		prometheus.MustRegister(workloadVulnNegligibleRelevant)
 		prometheus.MustRegister(workloadVulnUnknownRelevant)
 	}
 	prometheus.MustRegister(namespaceCritical)
@@ -265,21 +297,25 @@ func init() {
 	prometheus.MustRegister(namespaceVulnHigh)
 	prometheus.MustRegister(namespaceVulnMedium)
 	prometheus.MustRegister(namespaceVulnLow)
+	prometheus.MustRegister(namespaceVulnNegligible)
 	prometheus.MustRegister(namespaceVulnUnknown)
 	prometheus.MustRegister(clusterVulnCritical)
 	prometheus.MustRegister(clusterVulnHigh)
 	prometheus.MustRegister(clusterVulnMedium)
 	prometheus.MustRegister(clusterVulnLow)
+	prometheus.MustRegister(clusterVulnNegligible)
 	prometheus.MustRegister(clusterVulnUnknown)
 	prometheus.MustRegister(namespaceVulnCriticalRelevant)
 	prometheus.MustRegister(namespaceVulnHighRelevant)
 	prometheus.MustRegister(namespaceVulnMediumRelevant)
 	prometheus.MustRegister(namespaceVulnLowRelevant)
+	prometheus.MustRegister(namespaceVulnNegligibleRelevant)
 	prometheus.MustRegister(namespaceVulnUnknownRelevant)
 	prometheus.MustRegister(clusterVulnCriticalRelevant)
 	prometheus.MustRegister(clusterVulnHighRelevant)
 	prometheus.MustRegister(clusterVulnMediumRelevant)
 	prometheus.MustRegister(clusterVulnLowRelevant)
+	prometheus.MustRegister(clusterVulnNegligibleRelevant)
 	prometheus.MustRegister(clusterVulnUnknownRelevant)
 }
 
@@ -350,11 +386,13 @@ func ProcessVulnWorkloadMetrics(summary *v1beta1.VulnerabilityManifestSummaryLis
 		workloadVulnHigh.WithLabelValues(namespace, workload, kind, containerName).Set(float64(item.Spec.Severities.High.All))
 		workloadVulnMedium.WithLabelValues(namespace, workload, kind, containerName).Set(float64(item.Spec.Severities.Medium.All))
 		workloadVulnLow.WithLabelValues(namespace, workload, kind, containerName).Set(float64(item.Spec.Severities.Low.All))
+		workloadVulnNegligible.WithLabelValues(namespace, workload, kind, containerName).Set(float64(item.Spec.Severities.Negligible.All))
 		workloadVulnUnknown.WithLabelValues(namespace, workload, kind, containerName).Set(float64(item.Spec.Severities.Unknown.All))
 		workloadVulnCriticalRelevant.WithLabelValues(namespace, workload, kind, containerName).Set(float64(item.Spec.Severities.Critical.Relevant))
 		workloadVulnHighRelevant.WithLabelValues(namespace, workload, kind, containerName).Set(float64(item.Spec.Severities.High.Relevant))
 		workloadVulnMediumRelevant.WithLabelValues(namespace, workload, kind, containerName).Set(float64(item.Spec.Severities.Medium.Relevant))
 		workloadVulnLowRelevant.WithLabelValues(namespace, workload, kind, containerName).Set(float64(item.Spec.Severities.Low.Relevant))
+		workloadVulnNegligibleRelevant.WithLabelValues(namespace, workload, kind, containerName).Set(float64(item.Spec.Severities.Negligible.Relevant))
 		workloadVulnUnknownRelevant.WithLabelValues(namespace, workload, kind, containerName).Set(float64(item.Spec.Severities.Unknown.Relevant))
 	}
 }
@@ -369,11 +407,13 @@ func DeleteVulnWorkloadMetric(item *v1beta1.VulnerabilityManifestSummary) {
 	workloadVulnHigh.DeleteLabelValues(namespace, workload, kind, containerName)
 	workloadVulnMedium.DeleteLabelValues(namespace, workload, kind, containerName)
 	workloadVulnLow.DeleteLabelValues(namespace, workload, kind, containerName)
+	workloadVulnNegligible.DeleteLabelValues(namespace, workload, kind, containerName)
 	workloadVulnUnknown.DeleteLabelValues(namespace, workload, kind, containerName)
 	workloadVulnCriticalRelevant.DeleteLabelValues(namespace, workload, kind, containerName)
 	workloadVulnHighRelevant.DeleteLabelValues(namespace, workload, kind, containerName)
 	workloadVulnMediumRelevant.DeleteLabelValues(namespace, workload, kind, containerName)
 	workloadVulnLowRelevant.DeleteLabelValues(namespace, workload, kind, containerName)
+	workloadVulnNegligibleRelevant.DeleteLabelValues(namespace, workload, kind, containerName)
 	workloadVulnUnknownRelevant.DeleteLabelValues(namespace, workload, kind, containerName)
 }
 
@@ -383,29 +423,33 @@ func ProcessVulnNamespaceMetrics(summary *v1beta1.VulnerabilitySummaryList) {
 		namespaceVulnCritical.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Critical.All))
 		namespaceVulnHigh.WithLabelValues(namespace).Set(float64(item.Spec.Severities.High.All))
 		namespaceVulnLow.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Low.All))
+		namespaceVulnNegligible.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Negligible.All))
 		namespaceVulnMedium.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Medium.All))
 		namespaceVulnUnknown.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Unknown.All))
 		namespaceVulnCriticalRelevant.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Critical.Relevant))
 		namespaceVulnHighRelevant.WithLabelValues(namespace).Set(float64(item.Spec.Severities.High.Relevant))
 		namespaceVulnLowRelevant.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Low.Relevant))
+		namespaceVulnNegligibleRelevant.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Negligible.Relevant))
 		namespaceVulnMediumRelevant.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Medium.Relevant))
 		namespaceVulnUnknownRelevant.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Unknown.Relevant))
 	}
 }
 
-func ProcessVulnClusterMetrics(summary *v1beta1.VulnerabilitySummaryList) (totalCritical, totalHigh, totalLow, totalMedium, totalUnknown, relevantCritical, relevantHigh, relevantLow, relevantMedium, relevantUnknown int64) {
+func ProcessVulnClusterMetrics(summary *v1beta1.VulnerabilitySummaryList) (totalCritical, totalHigh, totalLow, totalNegligible, totalMedium, totalUnknown, relevantCritical, relevantHigh, relevantLow, relevantNegligible, relevantMedium, relevantUnknown int64) {
 
 	for _, item := range summary.Items {
 		totalCritical += item.Spec.Severities.Critical.All
 		totalHigh += item.Spec.Severities.High.All
 		totalMedium += item.Spec.Severities.Medium.All
 		totalLow += item.Spec.Severities.Low.All
+		totalNegligible += item.Spec.Severities.Negligible.All
 		totalUnknown += item.Spec.Severities.Unknown.All
 
 		relevantCritical += item.Spec.Severities.Critical.Relevant
 		relevantHigh += item.Spec.Severities.High.Relevant
 		relevantMedium += item.Spec.Severities.Medium.Relevant
 		relevantLow += item.Spec.Severities.Low.Relevant
+		relevantNegligible += item.Spec.Severities.Negligible.Relevant
 		relevantUnknown += item.Spec.Severities.Unknown.Relevant
 	}
 
@@ -413,11 +457,13 @@ func ProcessVulnClusterMetrics(summary *v1beta1.VulnerabilitySummaryList) (total
 	clusterVulnHigh.Set(float64(totalHigh))
 	clusterVulnMedium.Set(float64(totalMedium))
 	clusterVulnLow.Set(float64(totalLow))
+	clusterVulnNegligible.Set(float64(totalNegligible))
 	clusterVulnUnknown.Set(float64(totalUnknown))
 	clusterVulnCriticalRelevant.Set(float64(relevantCritical))
 	clusterVulnHighRelevant.Set(float64(relevantHigh))
 	clusterVulnMediumRelevant.Set(float64(relevantMedium))
 	clusterVulnLowRelevant.Set(float64(relevantLow))
+	clusterVulnNegligibleRelevant.Set(float64(relevantNegligible))
 	clusterVulnUnknownRelevant.Set(float64(relevantUnknown))
 
 	return

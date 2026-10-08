@@ -39,6 +39,10 @@ func TestProcessVulnWorkloadMetrics(t *testing.T) {
 							All:      20,
 							Relevant: 15,
 						},
+						Negligible: v1beta1.VulnerabilityCounters{
+							All:      6,
+							Relevant: 4,
+						},
 						Unknown: v1beta1.VulnerabilityCounters{
 							All:      7,
 							Relevant: 3,
@@ -73,6 +77,10 @@ func TestProcessVulnWorkloadMetrics(t *testing.T) {
 							All:      7,
 							Relevant: 3,
 						},
+						Negligible: v1beta1.VulnerabilityCounters{
+							All:      1,
+							Relevant: 1,
+						},
 						Unknown: v1beta1.VulnerabilityCounters{
 							All:      2,
 							Relevant: 5,
@@ -89,45 +97,53 @@ func TestProcessVulnWorkloadMetrics(t *testing.T) {
 	allHigh := &dto.Metric{}
 	allMedium := &dto.Metric{}
 	allLow := &dto.Metric{}
+	allNegligible := &dto.Metric{}
 	allUnknown := &dto.Metric{}
 	relevantCritical := &dto.Metric{}
 	relevantHigh := &dto.Metric{}
 	relevantMedium := &dto.Metric{}
 	relevantLow := &dto.Metric{}
+	relevantNegligible := &dto.Metric{}
 	relevantUnknown := &dto.Metric{}
 
 	ggeWorkloadVulnCritical, _ := workloadVulnCritical.GetMetricWithLabelValues("namespace1", "name1", "deployment", "container1")
 	ggeWorkloadVulnHigh, _ := workloadVulnHigh.GetMetricWithLabelValues("namespace1", "name1", "deployment", "container1")
 	ggeWorkloadVulnMedium, _ := workloadVulnMedium.GetMetricWithLabelValues("namespace1", "name1", "deployment", "container1")
 	ggeWorkloadVulnLow, _ := workloadVulnLow.GetMetricWithLabelValues("namespace1", "name1", "deployment", "container1")
+	ggeWorkloadVulnNegligible, _ := workloadVulnNegligible.GetMetricWithLabelValues("namespace1", "name1", "deployment", "container1")
 	ggeWorkloadVulnUnknown, _ := workloadVulnUnknown.GetMetricWithLabelValues("namespace1", "name1", "deployment", "container1")
 
 	ggeWorkloadVulnCriticalRelevant, _ := workloadVulnCriticalRelevant.GetMetricWithLabelValues("namespace1", "name1", "deployment", "container1")
 	ggeWorkloadVulnHighRelevant, _ := workloadVulnHighRelevant.GetMetricWithLabelValues("namespace1", "name1", "deployment", "container1")
 	ggeWorkloadVulnMediumRelevant, _ := workloadVulnMediumRelevant.GetMetricWithLabelValues("namespace1", "name1", "deployment", "container1")
 	ggeWorkloadVulnLowRelevant, _ := workloadVulnLowRelevant.GetMetricWithLabelValues("namespace1", "name1", "deployment", "container1")
+	ggeWorkloadVulnNegligibleRelevant, _ := workloadVulnNegligibleRelevant.GetMetricWithLabelValues("namespace1", "name1", "deployment", "container1")
 	ggeWorkloadVulnUnknownRelevant, _ := workloadVulnUnknownRelevant.GetMetricWithLabelValues("namespace1", "name1", "deployment", "container1")
 
 	_ = ggeWorkloadVulnCritical.Write(allCritical)
 	_ = ggeWorkloadVulnHigh.Write(allHigh)
 	_ = ggeWorkloadVulnMedium.Write(allMedium)
 	_ = ggeWorkloadVulnLow.Write(allLow)
+	_ = ggeWorkloadVulnNegligible.Write(allNegligible)
 	_ = ggeWorkloadVulnUnknown.Write(allUnknown)
 	_ = ggeWorkloadVulnCriticalRelevant.Write(relevantCritical)
 	_ = ggeWorkloadVulnHighRelevant.Write(relevantHigh)
 	_ = ggeWorkloadVulnMediumRelevant.Write(relevantMedium)
 	_ = ggeWorkloadVulnLowRelevant.Write(relevantLow)
+	_ = ggeWorkloadVulnNegligibleRelevant.Write(relevantNegligible)
 	_ = ggeWorkloadVulnUnknownRelevant.Write(relevantUnknown)
 
 	assert.Equal(t, float64(3), allCritical.Gauge.GetValue(), "Expected allCritical to be 3")
 	assert.Equal(t, float64(5), allHigh.Gauge.GetValue(), "Expected allHigh to be 5")
 	assert.Equal(t, float64(10), allMedium.Gauge.GetValue(), "Expected allMedium to be 10")
 	assert.Equal(t, float64(20), allLow.Gauge.GetValue(), "Expected allLow to be 20")
+	assert.Equal(t, float64(6), allNegligible.Gauge.GetValue(), "Expected allNegligible to be 6")
 	assert.Equal(t, float64(7), allUnknown.Gauge.GetValue(), "Expected allUnknown to be 7")
 	assert.Equal(t, float64(2), relevantCritical.Gauge.GetValue(), "Expected relevantCritical to be 2")
 	assert.Equal(t, float64(4), relevantHigh.Gauge.GetValue(), "Expected relevantHigh to be 4")
 	assert.Equal(t, float64(8), relevantMedium.Gauge.GetValue(), "Expected relevantMedium to be 8")
 	assert.Equal(t, float64(15), relevantLow.Gauge.GetValue(), "Expected relevantLow to be 15")
+	assert.Equal(t, float64(4), relevantNegligible.Gauge.GetValue(), "Expected relevantNegligible to be 4")
 	assert.Equal(t, float64(3), relevantUnknown.Gauge.GetValue(), "Expected relevantUnknown to be 3")
 }
 
@@ -153,6 +169,10 @@ func TestProcessVulnClusterMetrics(t *testing.T) {
 						Low: v1beta1.VulnerabilityCounters{
 							All:      20,
 							Relevant: 15,
+						},
+						Negligible: v1beta1.VulnerabilityCounters{
+							All:      3,
+							Relevant: 1,
 						},
 						Unknown: v1beta1.VulnerabilityCounters{
 							All:      7,
@@ -180,6 +200,10 @@ func TestProcessVulnClusterMetrics(t *testing.T) {
 							All:      7,
 							Relevant: 3,
 						},
+						Negligible: v1beta1.VulnerabilityCounters{
+							All:      5,
+							Relevant: 2,
+						},
 						Unknown: v1beta1.VulnerabilityCounters{
 							All:      2,
 							Relevant: 5,
@@ -190,17 +214,19 @@ func TestProcessVulnClusterMetrics(t *testing.T) {
 		},
 	}
 
-	totalCritical, totalHigh, totalLow, totalMedium, totalUnknown, relevantCritical, relevantHigh, relevantLow, relevantMedium, relevantUnknown := ProcessVulnClusterMetrics(vulnSummary)
+	totalCritical, totalHigh, totalLow, totalNegligible, totalMedium, totalUnknown, relevantCritical, relevantHigh, relevantLow, relevantNegligible, relevantMedium, relevantUnknown := ProcessVulnClusterMetrics(vulnSummary)
 
 	assert.Equal(t, int64(4), totalCritical)
 	assert.Equal(t, int64(14), totalHigh)
 	assert.Equal(t, int64(13), totalMedium)
 	assert.Equal(t, int64(27), totalLow)
+	assert.Equal(t, int64(8), totalNegligible)
 	assert.Equal(t, int64(9), totalUnknown)
 	assert.Equal(t, int64(17), relevantCritical)
 	assert.Equal(t, int64(8), relevantHigh)
 	assert.Equal(t, int64(13), relevantMedium)
 	assert.Equal(t, int64(18), relevantLow)
+	assert.Equal(t, int64(3), relevantNegligible)
 	assert.Equal(t, int64(8), relevantUnknown)
 
 }
