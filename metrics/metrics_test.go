@@ -214,21 +214,25 @@ func TestProcessVulnClusterMetrics(t *testing.T) {
 		},
 	}
 
-	totalCritical, totalHigh, totalLow, totalNegligible, totalMedium, totalUnknown, relevantCritical, relevantHigh, relevantLow, relevantNegligible, relevantMedium, relevantUnknown := ProcessVulnClusterMetrics(vulnSummary)
+	totalCritical, totalHigh, totalLow, totalMedium, totalUnknown, relevantCritical, relevantHigh, relevantLow, relevantMedium, relevantUnknown := ProcessVulnClusterMetrics(vulnSummary)
 
 	assert.Equal(t, int64(4), totalCritical)
 	assert.Equal(t, int64(14), totalHigh)
 	assert.Equal(t, int64(13), totalMedium)
 	assert.Equal(t, int64(27), totalLow)
-	assert.Equal(t, int64(8), totalNegligible)
 	assert.Equal(t, int64(9), totalUnknown)
 	assert.Equal(t, int64(17), relevantCritical)
 	assert.Equal(t, int64(8), relevantHigh)
 	assert.Equal(t, int64(13), relevantMedium)
 	assert.Equal(t, int64(18), relevantLow)
-	assert.Equal(t, int64(3), relevantNegligible)
 	assert.Equal(t, int64(8), relevantUnknown)
 
+	negligible := &dto.Metric{}
+	_ = clusterVulnNegligible.Write(negligible)
+	assert.Equal(t, float64(8), negligible.Gauge.GetValue(), "Expected cluster negligible to be 8")
+	negligibleRelevant := &dto.Metric{}
+	_ = clusterVulnNegligibleRelevant.Write(negligibleRelevant)
+	assert.Equal(t, float64(3), negligibleRelevant.Gauge.GetValue(), "Expected cluster relevant negligible to be 3")
 }
 
 func TestProcessConfigscanWorkloadMetrics(t *testing.T) {

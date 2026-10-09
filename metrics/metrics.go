@@ -435,7 +435,8 @@ func ProcessVulnNamespaceMetrics(summary *v1beta1.VulnerabilitySummaryList) {
 	}
 }
 
-func ProcessVulnClusterMetrics(summary *v1beta1.VulnerabilitySummaryList) (totalCritical, totalHigh, totalLow, totalNegligible, totalMedium, totalUnknown, relevantCritical, relevantHigh, relevantLow, relevantNegligible, relevantMedium, relevantUnknown int64) {
+func ProcessVulnClusterMetrics(summary *v1beta1.VulnerabilitySummaryList) (totalCritical, totalHigh, totalLow, totalMedium, totalUnknown, relevantCritical, relevantHigh, relevantLow, relevantMedium, relevantUnknown int64) {
+	var totalNegligible, relevantNegligible int64
 
 	for _, item := range summary.Items {
 		totalCritical += item.Spec.Severities.Critical.All
