@@ -149,7 +149,7 @@ func handleWorkloadConfigScanSummaries(storageClient *api.StorageClientImpl) {
 	metrics.ProcessConfigscanWorkloadMetrics(workloadConfigurationScanSummaries)
 }
 
-func handleConfigScanSummaries(storageClient *api.StorageClientImpl) {
+func handleConfigScanSummaries(storageClient api.StorageClient) {
 	configScanSummaries, err := storageClient.GetConfigScanSummaries()
 	if err != nil {
 		logger.L().Warning("failed getting configuration scan summaries", helpers.Error(err))
@@ -169,7 +169,7 @@ func handleWorkloadVulnScanSummaries(storageClient *api.StorageClientImpl) {
 	metrics.ProcessVulnWorkloadMetrics(vulnerabilityManifestSummaries)
 }
 
-func handleVulnScanSummaries(storageClient *api.StorageClientImpl) {
+func handleVulnScanSummaries(storageClient api.StorageClient) {
 	vulnScanSummaries, err := storageClient.GetVulnerabilitySummaries()
 	if err != nil {
 		logger.L().Warning("failed getting vulnerability scan summaries", helpers.Error(err))

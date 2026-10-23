@@ -3,9 +3,17 @@ package metrics
 import (
 	"os"
 	"strings"
+	"sync"
 
 	"github.com/kubescape/storage/pkg/apis/softwarecomposition/v1beta1"
 	"github.com/prometheus/client_golang/prometheus"
+)
+
+var (
+	configNamespaceMu    sync.Mutex
+	configNamespaceNames = make(map[string]struct{})
+	vulnNamespaceMu      sync.Mutex
+	vulnNamespaceNames   = make(map[string]struct{})
 )
 
 var (
@@ -346,6 +354,25 @@ func DeleteConfigscanWorkloadMetric(item *v1beta1.WorkloadConfigurationScanSumma
 }
 
 func ProcessConfigscanNamespaceMetrics(summary *v1beta1.ConfigurationScanSummaryList) {
+	// Only a successful, complete list reaches this function. Delete vanished
+	// namespaces without briefly removing retained series during a scrape.
+	next := make(map[string]struct{}, len(summary.Items))
+	for _, item := range summary.Items {
+		next[item.ObjectMeta.Name] = struct{}{}
+	}
+	configNamespaceMu.Lock()
+	defer configNamespaceMu.Unlock()
+	for namespace := range configNamespaceNames {
+		if _, present := next[namespace]; present {
+			continue
+		}
+		namespaceCritical.DeleteLabelValues(namespace)
+		namespaceHigh.DeleteLabelValues(namespace)
+		namespaceMedium.DeleteLabelValues(namespace)
+		namespaceLow.DeleteLabelValues(namespace)
+		namespaceUnknown.DeleteLabelValues(namespace)
+	}
+
 	for _, item := range summary.Items {
 		namespace := item.ObjectMeta.Name
 		namespaceCritical.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Critical))
@@ -354,6 +381,7 @@ func ProcessConfigscanNamespaceMetrics(summary *v1beta1.ConfigurationScanSummary
 		namespaceMedium.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Medium))
 		namespaceUnknown.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Unknown))
 	}
+	configNamespaceNames = next
 }
 
 func ProcessConfigscanClusterMetrics(summary *v1beta1.ConfigurationScanSummaryList) (totalCritical, totalHigh, totalLow, totalMedium, totalUnknown int64) {
@@ -418,6 +446,31 @@ func DeleteVulnWorkloadMetric(item *v1beta1.VulnerabilityManifestSummary) {
 }
 
 func ProcessVulnNamespaceMetrics(summary *v1beta1.VulnerabilitySummaryList) {
+	// Retain gauges for namespaces still present in the successful snapshot.
+	next := make(map[string]struct{}, len(summary.Items))
+	for _, item := range summary.Items {
+		next[item.ObjectMeta.Name] = struct{}{}
+	}
+	vulnNamespaceMu.Lock()
+	defer vulnNamespaceMu.Unlock()
+	for namespace := range vulnNamespaceNames {
+		if _, present := next[namespace]; present {
+			continue
+		}
+		namespaceVulnCritical.DeleteLabelValues(namespace)
+		namespaceVulnHigh.DeleteLabelValues(namespace)
+		namespaceVulnLow.DeleteLabelValues(namespace)
+		namespaceVulnNegligible.DeleteLabelValues(namespace)
+		namespaceVulnMedium.DeleteLabelValues(namespace)
+		namespaceVulnUnknown.DeleteLabelValues(namespace)
+		namespaceVulnCriticalRelevant.DeleteLabelValues(namespace)
+		namespaceVulnHighRelevant.DeleteLabelValues(namespace)
+		namespaceVulnLowRelevant.DeleteLabelValues(namespace)
+		namespaceVulnNegligibleRelevant.DeleteLabelValues(namespace)
+		namespaceVulnMediumRelevant.DeleteLabelValues(namespace)
+		namespaceVulnUnknownRelevant.DeleteLabelValues(namespace)
+	}
+
 	for _, item := range summary.Items {
 		namespace := item.ObjectMeta.Name
 		namespaceVulnCritical.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Critical.All))
@@ -433,6 +486,7 @@ func ProcessVulnNamespaceMetrics(summary *v1beta1.VulnerabilitySummaryList) {
 		namespaceVulnMediumRelevant.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Medium.Relevant))
 		namespaceVulnUnknownRelevant.WithLabelValues(namespace).Set(float64(item.Spec.Severities.Unknown.Relevant))
 	}
+	vulnNamespaceNames = next
 }
 
 func ProcessVulnClusterMetrics(summary *v1beta1.VulnerabilitySummaryList) (totalCritical, totalHigh, totalLow, totalMedium, totalUnknown, relevantCritical, relevantHigh, relevantLow, relevantMedium, relevantUnknown int64) {
