@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"errors"
 	"testing"
 
@@ -34,8 +35,8 @@ func TestListAllPages_FollowsContinueToken(t *testing.T) {
 	var seenContinue []string
 	call := 0
 
-	got, err := listAllPages(
-		func(opts metav1.ListOptions) (*v1beta1.VulnerabilityManifestSummaryList, error) {
+	got, err := listAllPages(context.Background(),
+		func(_ context.Context, opts metav1.ListOptions) (*v1beta1.VulnerabilityManifestSummaryList, error) {
 			// Every page must keep requesting the full spec.
 			if opts.ResourceVersion != softwarecomposition.ResourceVersionFullSpec {
 				t.Fatalf("page %d: ResourceVersion = %q, want %q", call, opts.ResourceVersion, softwarecomposition.ResourceVersionFullSpec)
@@ -85,8 +86,8 @@ func TestListAllPages_FollowsContinueToken(t *testing.T) {
 
 func TestListAllPages_SinglePage(t *testing.T) {
 	call := 0
-	got, err := listAllPages(
-		func(opts metav1.ListOptions) (*v1beta1.VulnerabilityManifestSummaryList, error) {
+	got, err := listAllPages(context.Background(),
+		func(_ context.Context, opts metav1.ListOptions) (*v1beta1.VulnerabilityManifestSummaryList, error) {
 			call++
 			return summaryList("", "only"), nil
 		},
@@ -107,8 +108,8 @@ func TestListAllPages_PropagatesError(t *testing.T) {
 	wantErr := errors.New("boom")
 	// First page succeeds, second page errors out.
 	call := 0
-	got, err := listAllPages(
-		func(opts metav1.ListOptions) (*v1beta1.VulnerabilityManifestSummaryList, error) {
+	got, err := listAllPages(context.Background(),
+		func(_ context.Context, opts metav1.ListOptions) (*v1beta1.VulnerabilityManifestSummaryList, error) {
 			call++
 			if call == 1 {
 				return summaryList("token-1", "a"), nil

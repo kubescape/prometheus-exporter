@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"net/http/httptest"
 	"strings"
@@ -18,11 +19,11 @@ type summaryClient struct {
 	vulnErr   error
 }
 
-func (c *summaryClient) GetConfigScanSummaries() (*v1beta1.ConfigurationScanSummaryList, error) {
+func (c *summaryClient) GetConfigScanSummaries(context.Context) (*v1beta1.ConfigurationScanSummaryList, error) {
 	return c.config, c.configErr
 }
 
-func (c *summaryClient) GetVulnerabilitySummaries() (*v1beta1.VulnerabilitySummaryList, error) {
+func (c *summaryClient) GetVulnerabilitySummaries(context.Context) (*v1beta1.VulnerabilitySummaryList, error) {
 	return c.vuln, c.vulnErr
 }
 

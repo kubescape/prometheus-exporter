@@ -88,3 +88,37 @@ This command deploys the Kubescape operator to your cluster, which is responsibl
 Please note that you should ensure that your Kubernetes cluster is up and running before running the Kubescape Exporter. Also, keep the exporter running in the background to collect and serve security metrics continually.
 
 If you encounter issues during setup or have questions, please refer to the project's documentation or open an issue on the project's GitHub repository for assistance.
+
+## Development
+
+The four summary read methods in `api.StorageClientImpl` accept a
+`context.Context`. Use a context with a deadline when a complete read needs a
+time budget; that context applies to every page. Cancellation, a failed page,
+a nil page or a repeated continuation token returns an error with no partial
+list. A successful empty list is still a valid result.
+
+The current refresh handlers use `context.Background()`, so this API change does
+not introduce a new runtime timeout or change the polling interval.
+
+Run the tests and the workload-read baseline with:
+
+```sh
+go test ./... -count=1
+go test -race ./... -count=1
+go test ./api -run '^$' -bench '^BenchmarkSummaryReads$' -benchmem -count=3
+```
+
+The benchmark reads 100, 1,000 and 10,000 configuration or vulnerability
+summaries, with 500 items per page. It uses prepared full-spec JSON responses
+over loopback HTTP and disables client-side QPS throttling to isolate client,
+transport and decoding costs. It reports allocations, bytes returned and
+requests per complete read. It does not measure Storage CPU, disk access,
+aggregation cost or production network latency; those need a real-cluster
+comparison before choosing workload polling defaults.
+
+The [baseline comparison](docs/summary-read-baseline.md) records the upstream
+and branch measurements using the same fixtures.
+
+`metrics/testdata/summary_metrics.prom` captures the current 51 metric families,
+including their HELP strings, gauge types, labels, severity values and
+normalization of workload kind and container name.

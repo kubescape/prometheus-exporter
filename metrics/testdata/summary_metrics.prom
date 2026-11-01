@@ -1,0 +1,153 @@
+# HELP kubescape_controls_total_cluster_critical Total number of critical vulnerabilities in the cluster
+# TYPE kubescape_controls_total_cluster_critical gauge
+kubescape_controls_total_cluster_critical 1
+# HELP kubescape_controls_total_cluster_high Total number of high vulnerabilities in the cluster
+# TYPE kubescape_controls_total_cluster_high gauge
+kubescape_controls_total_cluster_high 2
+# HELP kubescape_controls_total_cluster_low Total number of low vulnerabilities in the cluster
+# TYPE kubescape_controls_total_cluster_low gauge
+kubescape_controls_total_cluster_low 4
+# HELP kubescape_controls_total_cluster_medium Total number of medium vulnerabilities in the cluster
+# TYPE kubescape_controls_total_cluster_medium gauge
+kubescape_controls_total_cluster_medium 3
+# HELP kubescape_controls_total_cluster_unknown Total number of unknown vulnerabilities in the cluster
+# TYPE kubescape_controls_total_cluster_unknown gauge
+kubescape_controls_total_cluster_unknown 5
+# HELP kubescape_controls_total_namespace_critical Total number of critical vulnerabilities in the namespace
+# TYPE kubescape_controls_total_namespace_critical gauge
+kubescape_controls_total_namespace_critical{namespace="schema-fixture"} 1
+# HELP kubescape_controls_total_namespace_high Total number of high vulnerabilities in the namespace
+# TYPE kubescape_controls_total_namespace_high gauge
+kubescape_controls_total_namespace_high{namespace="schema-fixture"} 2
+# HELP kubescape_controls_total_namespace_low Total number of low vulnerabilities in the namespace
+# TYPE kubescape_controls_total_namespace_low gauge
+kubescape_controls_total_namespace_low{namespace="schema-fixture"} 4
+# HELP kubescape_controls_total_namespace_medium Total number of medium vulnerabilities in the namespace
+# TYPE kubescape_controls_total_namespace_medium gauge
+kubescape_controls_total_namespace_medium{namespace="schema-fixture"} 3
+# HELP kubescape_controls_total_namespace_unknown Total number of unknown vulnerabilities in the namespace
+# TYPE kubescape_controls_total_namespace_unknown gauge
+kubescape_controls_total_namespace_unknown{namespace="schema-fixture"} 5
+# HELP kubescape_controls_total_workload_critical Total number of critical vulnerabilities in the workload
+# TYPE kubescape_controls_total_workload_critical gauge
+kubescape_controls_total_workload_critical{namespace="schema-fixture",workload="api",workload_kind="deployment"} 1
+# HELP kubescape_controls_total_workload_high Total number of high vulnerabilities in the workload
+# TYPE kubescape_controls_total_workload_high gauge
+kubescape_controls_total_workload_high{namespace="schema-fixture",workload="api",workload_kind="deployment"} 2
+# HELP kubescape_controls_total_workload_low Total number of low vulnerabilities in the workload
+# TYPE kubescape_controls_total_workload_low gauge
+kubescape_controls_total_workload_low{namespace="schema-fixture",workload="api",workload_kind="deployment"} 4
+# HELP kubescape_controls_total_workload_medium Total number of medium vulnerabilities in the workload
+# TYPE kubescape_controls_total_workload_medium gauge
+kubescape_controls_total_workload_medium{namespace="schema-fixture",workload="api",workload_kind="deployment"} 3
+# HELP kubescape_controls_total_workload_unknown Total number of unknown vulnerabilities in the workload
+# TYPE kubescape_controls_total_workload_unknown gauge
+kubescape_controls_total_workload_unknown{namespace="schema-fixture",workload="api",workload_kind="deployment"} 5
+# HELP kubescape_vulnerabilities_relevant_cluster_critical Number of relevant critical vulnerabilities in the cluster
+# TYPE kubescape_vulnerabilities_relevant_cluster_critical gauge
+kubescape_vulnerabilities_relevant_cluster_critical 1
+# HELP kubescape_vulnerabilities_relevant_cluster_high Number of relevant high vulnerabilities in the cluster
+# TYPE kubescape_vulnerabilities_relevant_cluster_high gauge
+kubescape_vulnerabilities_relevant_cluster_high 2
+# HELP kubescape_vulnerabilities_relevant_cluster_low Number of relevant low vulnerabilities in the cluster
+# TYPE kubescape_vulnerabilities_relevant_cluster_low gauge
+kubescape_vulnerabilities_relevant_cluster_low 4
+# HELP kubescape_vulnerabilities_relevant_cluster_medium Number of relevant medium vulnerabilities in the cluster
+# TYPE kubescape_vulnerabilities_relevant_cluster_medium gauge
+kubescape_vulnerabilities_relevant_cluster_medium 3
+# HELP kubescape_vulnerabilities_relevant_cluster_negligible Number of relevant negligible vulnerabilities in the cluster
+# TYPE kubescape_vulnerabilities_relevant_cluster_negligible gauge
+kubescape_vulnerabilities_relevant_cluster_negligible 5
+# HELP kubescape_vulnerabilities_relevant_cluster_unknown Number of relevant unknown vulnerabilities in the cluster
+# TYPE kubescape_vulnerabilities_relevant_cluster_unknown gauge
+kubescape_vulnerabilities_relevant_cluster_unknown 6
+# HELP kubescape_vulnerabilities_relevant_namespace_critical Number of relevant critical vulnerabilities in the namespace
+# TYPE kubescape_vulnerabilities_relevant_namespace_critical gauge
+kubescape_vulnerabilities_relevant_namespace_critical{namespace="schema-fixture"} 1
+# HELP kubescape_vulnerabilities_relevant_namespace_high Number of relevant high vulnerabilities in the namespace
+# TYPE kubescape_vulnerabilities_relevant_namespace_high gauge
+kubescape_vulnerabilities_relevant_namespace_high{namespace="schema-fixture"} 2
+# HELP kubescape_vulnerabilities_relevant_namespace_low Number of relevant low vulnerabilities in the namespace
+# TYPE kubescape_vulnerabilities_relevant_namespace_low gauge
+kubescape_vulnerabilities_relevant_namespace_low{namespace="schema-fixture"} 4
+# HELP kubescape_vulnerabilities_relevant_namespace_medium Number of relevant medium vulnerabilities in the namespace
+# TYPE kubescape_vulnerabilities_relevant_namespace_medium gauge
+kubescape_vulnerabilities_relevant_namespace_medium{namespace="schema-fixture"} 3
+# HELP kubescape_vulnerabilities_relevant_namespace_negligible Number of relevant negligible vulnerabilities in the namespace
+# TYPE kubescape_vulnerabilities_relevant_namespace_negligible gauge
+kubescape_vulnerabilities_relevant_namespace_negligible{namespace="schema-fixture"} 5
+# HELP kubescape_vulnerabilities_relevant_namespace_unknown Number of relevant unknown vulnerabilities in the namespace
+# TYPE kubescape_vulnerabilities_relevant_namespace_unknown gauge
+kubescape_vulnerabilities_relevant_namespace_unknown{namespace="schema-fixture"} 6
+# HELP kubescape_vulnerabilities_relevant_workload_critical Number of relevant critical vulnerabilities in the workload
+# TYPE kubescape_vulnerabilities_relevant_workload_critical gauge
+kubescape_vulnerabilities_relevant_workload_critical{namespace="schema-fixture",workload="api",workload_container_name="app",workload_kind="deployment"} 1
+# HELP kubescape_vulnerabilities_relevant_workload_high Number of relevant high vulnerabilities in the workload
+# TYPE kubescape_vulnerabilities_relevant_workload_high gauge
+kubescape_vulnerabilities_relevant_workload_high{namespace="schema-fixture",workload="api",workload_container_name="app",workload_kind="deployment"} 2
+# HELP kubescape_vulnerabilities_relevant_workload_low Number of relevant low vulnerabilities in the workload
+# TYPE kubescape_vulnerabilities_relevant_workload_low gauge
+kubescape_vulnerabilities_relevant_workload_low{namespace="schema-fixture",workload="api",workload_container_name="app",workload_kind="deployment"} 4
+# HELP kubescape_vulnerabilities_relevant_workload_medium Number of relevant medium vulnerabilities in the workload
+# TYPE kubescape_vulnerabilities_relevant_workload_medium gauge
+kubescape_vulnerabilities_relevant_workload_medium{namespace="schema-fixture",workload="api",workload_container_name="app",workload_kind="deployment"} 3
+# HELP kubescape_vulnerabilities_relevant_workload_negligible Number of relevant negligible vulnerabilities in the workload
+# TYPE kubescape_vulnerabilities_relevant_workload_negligible gauge
+kubescape_vulnerabilities_relevant_workload_negligible{namespace="schema-fixture",workload="api",workload_container_name="app",workload_kind="deployment"} 5
+# HELP kubescape_vulnerabilities_relevant_workload_unknown Number of relevant unknown vulnerabilities in the workload
+# TYPE kubescape_vulnerabilities_relevant_workload_unknown gauge
+kubescape_vulnerabilities_relevant_workload_unknown{namespace="schema-fixture",workload="api",workload_container_name="app",workload_kind="deployment"} 6
+# HELP kubescape_vulnerabilities_total_cluster_critical Total number of critical vulnerabilities in the cluster
+# TYPE kubescape_vulnerabilities_total_cluster_critical gauge
+kubescape_vulnerabilities_total_cluster_critical 6
+# HELP kubescape_vulnerabilities_total_cluster_high Total number of high vulnerabilities in the cluster
+# TYPE kubescape_vulnerabilities_total_cluster_high gauge
+kubescape_vulnerabilities_total_cluster_high 7
+# HELP kubescape_vulnerabilities_total_cluster_low Total number of low vulnerabilities in the cluster
+# TYPE kubescape_vulnerabilities_total_cluster_low gauge
+kubescape_vulnerabilities_total_cluster_low 9
+# HELP kubescape_vulnerabilities_total_cluster_medium Total number of medium vulnerabilities in the cluster
+# TYPE kubescape_vulnerabilities_total_cluster_medium gauge
+kubescape_vulnerabilities_total_cluster_medium 8
+# HELP kubescape_vulnerabilities_total_cluster_negligible Total number of negligible vulnerabilities in the cluster
+# TYPE kubescape_vulnerabilities_total_cluster_negligible gauge
+kubescape_vulnerabilities_total_cluster_negligible 10
+# HELP kubescape_vulnerabilities_total_cluster_unknown Total number of unknown vulnerabilities in the cluster
+# TYPE kubescape_vulnerabilities_total_cluster_unknown gauge
+kubescape_vulnerabilities_total_cluster_unknown 11
+# HELP kubescape_vulnerabilities_total_namespace_critical Total number of critical vulnerabilities in the namespace
+# TYPE kubescape_vulnerabilities_total_namespace_critical gauge
+kubescape_vulnerabilities_total_namespace_critical{namespace="schema-fixture"} 6
+# HELP kubescape_vulnerabilities_total_namespace_high Total number of high vulnerabilities in the namespace
+# TYPE kubescape_vulnerabilities_total_namespace_high gauge
+kubescape_vulnerabilities_total_namespace_high{namespace="schema-fixture"} 7
+# HELP kubescape_vulnerabilities_total_namespace_low Total number of low vulnerabilities in the namespace
+# TYPE kubescape_vulnerabilities_total_namespace_low gauge
+kubescape_vulnerabilities_total_namespace_low{namespace="schema-fixture"} 9
+# HELP kubescape_vulnerabilities_total_namespace_medium Total number of medium vulnerabilities in the namespace
+# TYPE kubescape_vulnerabilities_total_namespace_medium gauge
+kubescape_vulnerabilities_total_namespace_medium{namespace="schema-fixture"} 8
+# HELP kubescape_vulnerabilities_total_namespace_negligible Total number of negligible vulnerabilities in the namespace
+# TYPE kubescape_vulnerabilities_total_namespace_negligible gauge
+kubescape_vulnerabilities_total_namespace_negligible{namespace="schema-fixture"} 10
+# HELP kubescape_vulnerabilities_total_namespace_unknown Total number of unknown vulnerabilities in the namespace
+# TYPE kubescape_vulnerabilities_total_namespace_unknown gauge
+kubescape_vulnerabilities_total_namespace_unknown{namespace="schema-fixture"} 11
+# HELP kubescape_vulnerabilities_total_workload_critical Total number of critical vulnerabilities in the workload
+# TYPE kubescape_vulnerabilities_total_workload_critical gauge
+kubescape_vulnerabilities_total_workload_critical{namespace="schema-fixture",workload="api",workload_container_name="app",workload_kind="deployment"} 6
+# HELP kubescape_vulnerabilities_total_workload_high Total number of high vulnerabilities in the workload
+# TYPE kubescape_vulnerabilities_total_workload_high gauge
+kubescape_vulnerabilities_total_workload_high{namespace="schema-fixture",workload="api",workload_container_name="app",workload_kind="deployment"} 7
+# HELP kubescape_vulnerabilities_total_workload_low Total number of low vulnerabilities in the workload
+# TYPE kubescape_vulnerabilities_total_workload_low gauge
+kubescape_vulnerabilities_total_workload_low{namespace="schema-fixture",workload="api",workload_container_name="app",workload_kind="deployment"} 9
+# HELP kubescape_vulnerabilities_total_workload_medium Total number of medium vulnerabilities in the workload
+# TYPE kubescape_vulnerabilities_total_workload_medium gauge
+kubescape_vulnerabilities_total_workload_medium{namespace="schema-fixture",workload="api",workload_container_name="app",workload_kind="deployment"} 8
+# HELP kubescape_vulnerabilities_total_workload_negligible Total number of negligible vulnerabilities in the workload
+# TYPE kubescape_vulnerabilities_total_workload_negligible gauge
+kubescape_vulnerabilities_total_workload_negligible{namespace="schema-fixture",workload="api",workload_container_name="app",workload_kind="deployment"} 10
+# HELP kubescape_vulnerabilities_total_workload_unknown Total number of unknown vulnerabilities in the workload
+# TYPE kubescape_vulnerabilities_total_workload_unknown gauge
+kubescape_vulnerabilities_total_workload_unknown{namespace="schema-fixture",workload="api",workload_container_name="app",workload_kind="deployment"} 11
