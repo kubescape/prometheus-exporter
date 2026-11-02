@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/http"
@@ -141,7 +142,7 @@ func watchWorkloadConfigScanSummaries(storageClient *api.StorageClientImpl) {
 }
 
 func handleWorkloadConfigScanSummaries(storageClient *api.StorageClientImpl) {
-	workloadConfigurationScanSummaries, err := storageClient.GetWorkloadConfigurationScanSummaries()
+	workloadConfigurationScanSummaries, err := storageClient.GetWorkloadConfigurationScanSummaries(context.Background())
 	if err != nil {
 		logger.L().Warning("failed getting workload configuration scan summaries", helpers.Error(err))
 		return
@@ -150,7 +151,7 @@ func handleWorkloadConfigScanSummaries(storageClient *api.StorageClientImpl) {
 }
 
 func handleConfigScanSummaries(storageClient api.StorageClient) {
-	configScanSummaries, err := storageClient.GetConfigScanSummaries()
+	configScanSummaries, err := storageClient.GetConfigScanSummaries(context.Background())
 	if err != nil {
 		logger.L().Warning("failed getting configuration scan summaries", helpers.Error(err))
 		return
@@ -161,7 +162,7 @@ func handleConfigScanSummaries(storageClient api.StorageClient) {
 }
 
 func handleWorkloadVulnScanSummaries(storageClient *api.StorageClientImpl) {
-	vulnerabilityManifestSummaries, err := storageClient.GetVulnerabilityManifestSummaries()
+	vulnerabilityManifestSummaries, err := storageClient.GetVulnerabilityManifestSummaries(context.Background())
 	if err != nil {
 		logger.L().Warning("failed getting vulnerability manifest summaries", helpers.Error(err))
 		return
@@ -170,7 +171,7 @@ func handleWorkloadVulnScanSummaries(storageClient *api.StorageClientImpl) {
 }
 
 func handleVulnScanSummaries(storageClient api.StorageClient) {
-	vulnScanSummaries, err := storageClient.GetVulnerabilitySummaries()
+	vulnScanSummaries, err := storageClient.GetVulnerabilitySummaries(context.Background())
 	if err != nil {
 		logger.L().Warning("failed getting vulnerability scan summaries", helpers.Error(err))
 		return

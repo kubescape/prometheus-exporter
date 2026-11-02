@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"errors"
 
 	"github.com/kubescape/go-logger"
 	"github.com/kubescape/go-logger/helpers"
@@ -14,7 +15,7 @@ import (
 )
 
 type StorageClientImpl struct {
-	clientset *spdxclient.Clientset
+	clientset spdxclient.Interface
 }
 
 var _ StorageClient = &StorageClientImpl{}
@@ -34,6 +35,11 @@ func NewStorageClient() *StorageClientImpl {
 	}
 }
 
+var (
+	errNilPage               = errors.New("summary list returned a nil page")
+	errRepeatedContinueToken = errors.New("summary list returned a repeated continuation token")
+)
+
 // pagedList is satisfied by the *...List pointer types generated for the
 // softwarecomposition API. The continue accessors are promoted from the
 // embedded metav1.ListMeta.
@@ -43,7 +49,10 @@ type pagedList[T any] interface {
 	SetContinue(string)
 }
 
-// listAllPages lists every page of a resource, following the continuation token
+// listAllPages returns a complete list or an error, never a partial inventory.
+// The caller's context covers every page, including cancellation between pages.
+//
+// It lists every page of a resource, following the continuation token
 // the storage backend returns, and concatenates the items into a single list.
 //
 // The storage backend (kubescape/storage) applies a default page size of 500
@@ -58,15 +67,26 @@ type pagedList[T any] interface {
 // (not ResourceVersionMatch), which is the only field allowed alongside a
 // continue token.
 func listAllPages[T any, PT pagedList[T]](
-	list func(opts metav1.ListOptions) (PT, error),
+	ctx context.Context,
+	list func(context.Context, metav1.ListOptions) (PT, error),
 	appendItems func(dst, src PT),
 ) (PT, error) {
 	opts := metav1.ListOptions{ResourceVersion: softwarecomposition.ResourceVersionFullSpec}
 	var all PT
+	seen := make(map[string]struct{})
 	for {
-		page, err := list(opts)
+		if err := ctx.Err(); err != nil {
+			return nil, err
+		}
+		page, err := list(ctx, opts)
 		if err != nil {
 			return nil, err
+		}
+		if err := ctx.Err(); err != nil {
+			return nil, err
+		}
+		if page == nil {
+			return nil, errNilPage
 		}
 		if all == nil {
 			all = page
@@ -80,6 +100,10 @@ func listAllPages[T any, PT pagedList[T]](
 			all.SetContinue("")
 			return all, nil
 		}
+		if _, repeated := seen[token]; repeated {
+			return nil, errRepeatedContinueToken
+		}
+		seen[token] = struct{}{}
 		opts.Continue = token
 	}
 }
@@ -89,11 +113,11 @@ func (sc *StorageClientImpl) WatchVulnerabilityManifestSummaries() (watch.Interf
 	return sc.clientset.SpdxV1beta1().VulnerabilityManifestSummaries("").Watch(context.Background(), metav1.ListOptions{ResourceVersion: softwarecomposition.ResourceVersionFullSpec})
 }
 
-func (sc *StorageClientImpl) GetVulnerabilityManifestSummaries() (*v1beta1.VulnerabilityManifestSummaryList, error) {
+func (sc *StorageClientImpl) GetVulnerabilityManifestSummaries(ctx context.Context) (*v1beta1.VulnerabilityManifestSummaryList, error) {
 	// we need to pass the fullSpec resource version to get the full spec in GetList
-	return listAllPages(
-		func(opts metav1.ListOptions) (*v1beta1.VulnerabilityManifestSummaryList, error) {
-			return sc.clientset.SpdxV1beta1().VulnerabilityManifestSummaries("").List(context.Background(), opts)
+	return listAllPages(ctx,
+		func(ctx context.Context, opts metav1.ListOptions) (*v1beta1.VulnerabilityManifestSummaryList, error) {
+			return sc.clientset.SpdxV1beta1().VulnerabilityManifestSummaries("").List(ctx, opts)
 		},
 		func(dst, src *v1beta1.VulnerabilityManifestSummaryList) {
 			dst.Items = append(dst.Items, src.Items...)
@@ -101,11 +125,11 @@ func (sc *StorageClientImpl) GetVulnerabilityManifestSummaries() (*v1beta1.Vulne
 	)
 }
 
-func (sc *StorageClientImpl) GetVulnerabilitySummaries() (*v1beta1.VulnerabilitySummaryList, error) {
+func (sc *StorageClientImpl) GetVulnerabilitySummaries(ctx context.Context) (*v1beta1.VulnerabilitySummaryList, error) {
 	// VulnerabilitySummaries is a virtual resource, it has to be enabled in the storage
-	return listAllPages(
-		func(opts metav1.ListOptions) (*v1beta1.VulnerabilitySummaryList, error) {
-			return sc.clientset.SpdxV1beta1().VulnerabilitySummaries("").List(context.Background(), opts)
+	return listAllPages(ctx,
+		func(ctx context.Context, opts metav1.ListOptions) (*v1beta1.VulnerabilitySummaryList, error) {
+			return sc.clientset.SpdxV1beta1().VulnerabilitySummaries("").List(ctx, opts)
 		},
 		func(dst, src *v1beta1.VulnerabilitySummaryList) {
 			dst.Items = append(dst.Items, src.Items...)
@@ -118,11 +142,11 @@ func (sc *StorageClientImpl) WatchWorkloadConfigurationScanSummaries() (watch.In
 	return sc.clientset.SpdxV1beta1().WorkloadConfigurationScanSummaries("").Watch(context.Background(), metav1.ListOptions{ResourceVersion: softwarecomposition.ResourceVersionFullSpec})
 }
 
-func (sc *StorageClientImpl) GetWorkloadConfigurationScanSummaries() (*v1beta1.WorkloadConfigurationScanSummaryList, error) {
+func (sc *StorageClientImpl) GetWorkloadConfigurationScanSummaries(ctx context.Context) (*v1beta1.WorkloadConfigurationScanSummaryList, error) {
 	// we need to pass the fullSpec resource version to get the full spec in GetList
-	return listAllPages(
-		func(opts metav1.ListOptions) (*v1beta1.WorkloadConfigurationScanSummaryList, error) {
-			return sc.clientset.SpdxV1beta1().WorkloadConfigurationScanSummaries("").List(context.Background(), opts)
+	return listAllPages(ctx,
+		func(ctx context.Context, opts metav1.ListOptions) (*v1beta1.WorkloadConfigurationScanSummaryList, error) {
+			return sc.clientset.SpdxV1beta1().WorkloadConfigurationScanSummaries("").List(ctx, opts)
 		},
 		func(dst, src *v1beta1.WorkloadConfigurationScanSummaryList) {
 			dst.Items = append(dst.Items, src.Items...)
@@ -130,11 +154,11 @@ func (sc *StorageClientImpl) GetWorkloadConfigurationScanSummaries() (*v1beta1.W
 	)
 }
 
-func (sc *StorageClientImpl) GetConfigScanSummaries() (*v1beta1.ConfigurationScanSummaryList, error) {
+func (sc *StorageClientImpl) GetConfigScanSummaries(ctx context.Context) (*v1beta1.ConfigurationScanSummaryList, error) {
 	// ConfigScanSummaries is a virtual resource, it has to be enabled in the storage
-	return listAllPages(
-		func(opts metav1.ListOptions) (*v1beta1.ConfigurationScanSummaryList, error) {
-			return sc.clientset.SpdxV1beta1().ConfigurationScanSummaries("").List(context.Background(), opts)
+	return listAllPages(ctx,
+		func(ctx context.Context, opts metav1.ListOptions) (*v1beta1.ConfigurationScanSummaryList, error) {
+			return sc.clientset.SpdxV1beta1().ConfigurationScanSummaries("").List(ctx, opts)
 		},
 		func(dst, src *v1beta1.ConfigurationScanSummaryList) {
 			dst.Items = append(dst.Items, src.Items...)
